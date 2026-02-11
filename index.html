@@ -17,52 +17,27 @@
             </div>
             <nav class="nav-menu">
                 <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <i class="fas fa-th-large"></i> Portafolio
+                    <a href="#" class="nav-link active" id="nav-dashboard">
+                        <i class="fas fa-th-large"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-wallet"></i> Billetera
+                    <a href="#" class="nav-link" id="nav-movimientos">
+                        <i class="fas fa-exchange-alt"></i> Movimientos
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-file-invoice-dollar"></i> Notas estructuradas
+                    <a href="#" class="nav-link" id="nav-billeteras">
+                        <i class="fas fa-wallet"></i> Billeteras
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-hand-holding-usd"></i> Fondos MFX
+                    <a href="#" class="nav-link" id="nav-categorias">
+                        <i class="fas fa-tags"></i> Categorías
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-exchange-alt"></i> OTC
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-users"></i> Lista usuarios
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-file-alt"></i> Documentos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-newspaper"></i> Noticias
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-envelope"></i> Contacto
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" id="nav-micuenta">
                         <i class="fas fa-user-circle"></i> Mi cuenta
                     </a>
                 </li>
@@ -73,12 +48,9 @@
         <main class="main-content">
             <header class="header">
                 <div class="header-title">
-                    <h1>Portafolio de inversión</h1>
+                    <h1 id="view-title">Dashboard</h1>
                 </div>
                 <div class="header-actions">
-                    <div class="action-btn"><i class="far fa-moon"></i></div>
-                    <div class="action-btn"><i class="far fa-bell"></i></div>
-                    <div class="action-btn"><img src="https://flagcdn.com/w20/es.png" width="20" alt="ES"> ES <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i></div>
                     <div class="user-profile">
                         <div class="avatar"></div>
                         <div class="user-info">
@@ -89,187 +61,200 @@
                 </div>
             </header>
 
-            <!-- Verification Banner -->
-            <div class="verification-banner">
-                <div class="verification-header">
-                    <div>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Porcentaje verificación de la cuenta</p>
-                        <h3 style="font-size: 18px; font-weight: 700;">Mi cuenta</h3>
-                    </div>
-                    <div style="font-size: 14px; font-weight: 700; color: var(--text-muted);">80%</div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment"></div>
-                </div>
-            </div>
-
-            <!-- Tab Selector (Top) -->
-            <div style="display: flex; justify-content: center; margin-bottom: 32px;">
-                <div style="background: #eee; padding: 4px; border-radius: 30px; display: flex;">
-                    <button style="background: var(--accent-gold); border: none; padding: 10px 30px; border-radius: 30px; font-weight: 600; cursor: pointer;">MFX Prime</button>
-                    <button style="background: transparent; border: none; padding: 10px 30px; border-radius: 30px; color: var(--text-muted); font-weight: 600; cursor: pointer;">Rendimiento</button>
-                </div>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div class="grid-dashboard">
-                <!-- Left Side: Portfolio Total -->
-                <div class="card">
-                    <div class="card-title">
-                        Portafolio total
-                        <div class="btn-group">
-                            <button class="btn-outline">Retirar</button>
-                            <button class="btn-primary">Depositar</button>
+            <!-- Verification Banner (Visible en Dashboard) -->
+            <div id="view-dashboard" class="view-section">
+                <div class="verification-banner">
+                    <div class="verification-header">
+                        <div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Porcentaje verificación de la cuenta</p>
+                            <h3 style="font-size: 18px; font-weight: 700;">Estado del Perfil</h3>
                         </div>
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-muted);">80%</div>
                     </div>
-                    <div class="portfolio-content">
-                        <div class="chart-container">
-                            <div class="doughnut-placeholder">
-                                <div class="doughnut-inner">
-                                    <span style="font-size: 10px; color: var(--text-muted);">Portafolio Total</span>
-                                    <span style="font-size: 14px; font-weight: 700;">$10.000</span>
+                    <div class="progress-container">
+                        <div class="progress-segment filled"></div>
+                        <div class="progress-segment filled"></div>
+                        <div class="progress-segment filled"></div>
+                        <div class="progress-segment filled"></div>
+                        <div class="progress-segment"></div>
+                    </div>
+                </div>
+
+                <div class="grid-dashboard">
+                    <div class="card">
+                        <div class="card-title">Resumen Financiero</div>
+                        <div class="portfolio-content">
+                            <div class="chart-container">
+                                <div class="doughnut-placeholder">
+                                    <div class="doughnut-inner">
+                                        <span style="font-size: 10px; color: var(--text-muted);">Saldo total</span>
+                                        <span style="font-size: 14px; font-weight: 700;" id="total-balance-chart">$10.000</span>
+                                    </div>
                                 </div>
                             </div>
+                            <ul class="legend">
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-blue);"></span> Ingresos | $15k</li>
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-orange);"></span> Gastos | $5k</li>
+                            </ul>
                         </div>
-                        <ul class="legend">
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: var(--accent-blue);"></span>
-                                <strong>60% | Notas estructuradas</strong>
-                            </li>
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: var(--accent-gold);"></span>
-                                <span>25% | Fondos MFX</span>
-                            </li>
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: #d16aff;"></span>
-                                <span>0% | OTC</span>
-                            </li>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Estado Global</div>
+                        <ul class="stats-list">
+                            <li class="stat-row"><span>Ingresos</span> <span style="color:#2ecc71">+$15.000</span></li>
+                            <li class="stat-row"><span>Gastos</span> <span style="color:#e74c3c">-$5.000</span></li>
+                            <li class="stat-row"><span>Balance</span> <span id="total-balance-stat">$10.000</span></li>
                         </ul>
                     </div>
-                    
-                    <div style="margin-top: 40px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <h4 style="font-size: 14px;">Ganancia | 0.87%</h4>
-                        </div>
-                        <div style="height: 12px; background: #f0f0f0; border-radius: 10px; position: relative; overflow: hidden;">
-                            <div style="width: 87%; height: 100%; background: #232d56; border-radius: 10px;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-muted);">
-                            <span>Inversiones MFX Prime</span>
-                            <span>0.87/100%</span>
-                        </div>
-                    </div>
                 </div>
+            </div>
 
-                <!-- Right Side: Mi Portafolio -->
+            <!-- Movimientos View -->
+            <div id="view-movimientos" class="view-section" style="display: none;">
                 <div class="card">
                     <div class="card-title">
-                        Mi Portafolio
-                        <i class="fas fa-download" style="font-size: 14px; color: var(--text-muted);"></i>
+                        Todos los Movimientos
+                        <button class="btn-primary">+ Nuevo</button>
                     </div>
-                    <ul class="stats-list">
-                        <li class="stat-row">
-                            <span>Depósito total</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                        <li class="stat-row">
-                            <span>Retiro total</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                        <li class="stat-row">
-                            <span>Invertido</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                        <li class="stat-row">
-                            <span>Saldo disponible</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                        <li class="stat-row">
-                            <span>Total Ganancia/Pérdida</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                        <li class="stat-row">
-                            <span>Portafolio actual</span>
-                            <span class="stat-value">$0,00</span>
-                        </li>
-                    </ul>
-                    
-                    <div class="tabs" style="margin-top: 24px;">
-                        <div class="tab active">Notas</div>
-                        <div class="tab">Fondos</div>
-                        <div class="tab">OTC</div>
+
+                    <!-- Filter Bar -->
+                    <div class="filters-bar" style="display: flex; gap: 16px; margin-bottom: 24px; background: #f8f9fa; padding: 16px; border-radius: 12px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="filter-group" style="flex: 1; min-width: 150px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Fecha</label>
+                            <input type="date" id="filter-date" class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                        </div>
+                        <div class="filter-group" style="flex: 2; min-width: 200px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Descripción</label>
+                            <input type="text" id="filter-desc" placeholder="Buscar por descripción..." class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 150px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Categoría</label>
+                            <select id="filter-category" class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                                <option value="">Todas</option>
+                                <option value="Alimentación">Alimentación</option>
+                                <option value="Transporte">Transporte</option>
+                                <option value="Ocio">Ocio</option>
+                                <option value="Salario">Salario</option>
+                                <option value="Extra">Extra</option>
+                            </select>
+                        </div>
+                        <button class="btn-outline" id="clear-filters" style="padding: 10px; height: 38px; border-color: #ddd; color: var(--text-muted);"><i class="fas fa-undo"></i></button>
                     </div>
-                    
-                    <div class="tab-content">
-                        <div class="stat-row">
-                            <span style="font-size: 11px; color: var(--text-muted);">Invertido en el producto</span>
-                        </div>
-                        <div class="stat-row">
-                            <span style="font-weight: 700;">$0,00</span>
-                        </div>
-                        <div class="stat-row" style="margin-top: 8px;">
-                            <span style="font-size: 11px; color: var(--text-muted);">Ganancia/Pérdida flotante</span>
-                        </div>
-                        <div class="stat-row">
-                            <span style="font-weight: 700;">0.0%</span>
-                        </div>
-                        <div class="stat-row" style="margin-top: 8px;">
-                            <span style="font-size: 11px; color: var(--text-muted);">Valor inversión</span>
-                        </div>
-                        <div class="stat-row">
-                            <span style="font-weight: 700;">0.0%</span>
-                        </div>
-                        
-                        <button class="invest-btn">Invertir</button>
+
+                    <div class="table-container">
+                        <table style="width: 100%; border-collapse: collapse;" id="table-movimientos">
+                            <thead>
+                                <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 12px;">11 Feb 2026</td>
+                                    <td>Cena restaurante</td>
+                                    <td>Ocio</td>
+                                    <td style="color: #e74c3c;">-$85.000</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px;">10 Feb 2026</td>
+                                    <td>Venta producto</td>
+                                    <td>Extra</td>
+                                    <td style="color: #2ecc71;">+$200.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Cards -->
-            <div class="horizontal-cards">
-                <div class="item-card" style="border-left-color: var(--accent-blue);">
-                    <div class="card-info">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                            <h4 style="margin: 0;">Notas estructuradas | 60 %</h4>
-                            <span class="badge badge-low">Riesgo Bajo</span>
+            <!-- Billeteras View -->
+            <div id="view-billeteras" class="view-section" style="display: none;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    <!-- Billetera: Efectivo -->
+                    <div class="card" style="border-left: 4px solid var(--accent-blue);">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Efectivo</h4>
+                                <h2 style="font-size: 24px; margin-top: 8px;" id="val-efectivo">$150.000</h2>
+                            </div>
+                            <i class="fas fa-coins" style="color: var(--accent-blue);"></i>
                         </div>
-                        <div class="card-metrics">
-                            <div class="metric">
-                                <span class="metric-label">Total Invertido</span>
-                                <span class="metric-value">600,000</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Total ganancias</span>
-                                <span class="metric-value">$9,000</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Porcentaje de ganancia</span>
-                                <span class="metric-value">1.5%</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Saldo total</span>
-                                <span class="metric-value">609,000</span>
-                            </div>
+                        <div class="wallet-actions">
+                            <button class="btn-wallet-action add" onclick="updateWalletBalance('val-efectivo', 'add')">
+                                <i class="fas fa-plus"></i> Ingresar
+                            </button>
+                            <button class="btn-wallet-action withdraw" onclick="updateWalletBalance('val-efectivo', 'withdraw')">
+                                <i class="fas fa-minus"></i> Retirar
+                            </button>
                         </div>
                     </div>
-                    <a href="#" class="ver-mas">Ver más</a>
-                </div>
-
-                <div class="item-card" style="border-left-color: var(--accent-gold);">
-                    <div class="card-info">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                            <h4 style="margin: 0;">Fondo MFX | 25 %</h4>
-                            <span class="badge badge-medium">Riesgo Medio</span>
+                    <!-- Billetera: Bancolombia -->
+                    <div class="card" style="border-left: 4px solid var(--accent-gold);">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Bancolombia</h4>
+                                <h2 style="font-size: 24px; margin-top: 8px;" id="val-banco">$8.500.000</h2>
+                            </div>
+                            <i class="fas fa-university" style="color: var(--accent-gold);"></i>
                         </div>
-                        <!-- Métricas omitidas para brevedad como en la imagen o se pueden repetir -->
+                        <div class="wallet-actions">
+                            <button class="btn-wallet-action add" onclick="updateWalletBalance('val-banco', 'add')">
+                                <i class="fas fa-plus"></i> Ingresar
+                            </button>
+                            <button class="btn-wallet-action withdraw" onclick="updateWalletBalance('val-banco', 'withdraw')">
+                                <i class="fas fa-minus"></i> Retirar
+                            </button>
+                        </div>
                     </div>
-                    <a href="#" class="ver-mas">Ver más</a>
+                    <div class="card" style="border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <span style="color: var(--text-muted);"><i class="fas fa-plus"></i> Nueva Billetera</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Categorías View -->
+            <div id="view-categorias" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-title">Gestionar Categorías</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;">
+                        <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🍔</div>
+                            <div style="font-weight: 600;">Comida</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🚌</div>
+                            <div style="font-weight: 600;">Transporte</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">💡</div>
+                            <div style="font-weight: 600;">Servicios</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center; border: 2px dashed #eee;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">+</div>
+                            <div style="font-weight: 600; color: #aaa;">Nueva</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Mi Cuenta View -->
+             <div id="view-micuenta" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-title">Perfil de Usuario</div>
+                    <div style="display: flex; gap: 32px; align-items: center;">
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background: #eee;"></div>
+                        <div>
+                            <h2 style="margin-bottom: 4px;">Alberto Rodriguez</h2>
+                            <p style="color: var(--text-muted);">alberto.rod@example.com</p>
+                            <button class="btn-outline" style="margin-top: 12px;">Editar Perfil</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
     <script src="js/dashboard.js"></script>
