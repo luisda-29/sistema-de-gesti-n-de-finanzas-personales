@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login/Registro Finanzas</title>
+</head>
+<body>
+    <div id="authContainer">
+        <!-- Login -->
+        <div id="loginForm" style="display: block;">
+            <h2>Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email"><br>
+            <input type="password" id="loginPassword" placeholder="Contraseña"><br>
+            <button onclick="login()">Iniciar Sesión</button>
+            <button onclick="showRegister()">Registrarse</button>
+            <p id="loginMessage"></p>
+        </div>
+
+        <!-- Registro -->
+        <div id="registerForm" style="display: none;">
+            <h2>Registro</h2>
+            <input type="text" id="registerName" placeholder="Nombre"><br>
+            <input type="email" id="registerEmail" placeholder="Email"><br>
+            <input type="password" id="registerPassword" placeholder="Contraseña"><br>
+            <button onclick="register()">Crear Cuenta</button>
+            <button onclick="showLogin()">Volver a Login</button>
+            <p id="registerMessage"></p>
+        </div>
+    </div>
+
+    <!-- Dashboard (oculto inicialmente) -->
+    <div id="dashboard" style="display: none;">
+        <h2>Dashboard - Categorías</h2>
+        <button onclick="logout()">Cerrar Sesión</button>
+        
+        <div id="categoriesList"></div>
+        
+        <h3>Agregar Categoría</h3>
+        <input type="text" id="newCategoryName" placeholder="Nombre categoría">
+        <select id="newCategoryType">
+            <option value="Bolsillo">Bolsillo</option>
+            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+            <option value="Meta">Meta a alcanzar</option>
+            <option value="Resumen">Cuánto dinero tiene</option>
+            <option value="Pago Vehículo">Pagar vehículos</option>
+            <option value="Pago Rápido">Pagar con un solo click</option>
+        </select>
+        <button onclick="addCategory()">Agregar</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
