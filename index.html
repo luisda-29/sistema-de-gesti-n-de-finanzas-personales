@@ -17,52 +17,27 @@
             </div>
             <nav class="nav-menu">
                 <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <i class="fas fa-th-large"></i> Portafolio
+                    <a href="#" class="nav-link active" id="nav-dashboard">
+                        <i class="fas fa-th-large"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-wallet"></i> Billetera
+                    <a href="#" class="nav-link" id="nav-movimientos">
+                        <i class="fas fa-exchange-alt"></i> Movimientos
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-file-invoice-dollar"></i> Notas estructuradas
+                    <a href="#" class="nav-link" id="nav-billeteras">
+                        <i class="fas fa-wallet"></i> Billeteras
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-hand-holding-usd"></i> Fondos MFX
+                    <a href="#" class="nav-link" id="nav-categorias">
+                        <i class="fas fa-tags"></i> Categorías
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-exchange-alt"></i> OTC
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-users"></i> Lista usuarios
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-file-alt"></i> Documentos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-newspaper"></i> Noticias
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-envelope"></i> Contacto
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" id="nav-micuenta">
                         <i class="fas fa-user-circle"></i> Mi cuenta
                     </a>
                 </li>
@@ -73,12 +48,9 @@
         <main class="main-content">
             <header class="header">
                 <div class="header-title">
-                    <h1>Portafolio de inversión</h1>
+                    <h1 id="view-title">Dashboard</h1>
                 </div>
                 <div class="header-actions">
-                    <div class="action-btn"><i class="far fa-moon"></i></div>
-                    <div class="action-btn"><i class="far fa-bell"></i></div>
-                    <div class="action-btn"><img src="https://flagcdn.com/w20/es.png" width="20" alt="ES"> ES <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i></div>
                     <div class="user-profile">
                         <div class="avatar"></div>
                         <div class="user-info">
@@ -89,82 +61,299 @@
                 </div>
             </header>
 
-            <!-- Verification Banner -->
-            <div class="verification-banner">
-                <div class="verification-header">
-                    <div>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Porcentaje verificación de la cuenta</p>
-                        <h3 style="font-size: 18px; font-weight: 700;">Mi cuenta</h3>
-                    </div>
-                    <div style="font-size: 14px; font-weight: 700; color: var(--text-muted);">80%</div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment filled"></div>
-                    <div class="progress-segment"></div>
-                </div>
-            </div>
-
-            <!-- Tab Selector (Top) -->
-            <div style="display: flex; justify-content: center; margin-bottom: 32px;">
-                <div style="background: #eee; padding: 4px; border-radius: 30px; display: flex;">
-                    <button style="background: var(--accent-gold); border: none; padding: 10px 30px; border-radius: 30px; font-weight: 600; cursor: pointer;">MFX Prime</button>
-                    <button style="background: transparent; border: none; padding: 10px 30px; border-radius: 30px; color: var(--text-muted); font-weight: 600; cursor: pointer;">Rendimiento</button>
-                </div>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div class="grid-dashboard">
-                <!-- Left Side: Portfolio Total -->
-                <div class="card">
-                    <div class="card-title">
-                        Portafolio total
-                        <div class="btn-group">
-                            <button class="btn-outline">Retirar</button>
-                            <button class="btn-primary">Depositar</button>
+            <!-- Registration Module (Dashboard) -->
+            <div id="view-dashboard" class="view-section">
+                <div class="card" style="margin-bottom: 24px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                        <!-- Registrar Ingreso -->
+                        <div style="border-right: 1px solid var(--border-color); padding-right: 16px;">
+                            <h3 style="font-size: 16px; margin-bottom: 16px; color: #2ecc71;"><i class="fas fa-plus-circle"></i> Registrar Ingreso</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <input type="date" id="inc-date" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                <select id="inc-wallet" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                    <option value="val-efectivo">Efectivo</option>
+                                    <option value="val-banco">Bancolombia</option>
+                                </select>
+                                <input type="text" id="inc-desc" placeholder="Descripción" class="btn-outline" style="width: 100%; border-color: #ddd; grid-column: span 2;">
+                                <select id="inc-cat" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                    <option value="" disabled selected>Categoría</option>
+                                    <!-- Dinámico -->
+                                </select>
+                                <input type="number" id="inc-amount" placeholder="Monto" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                            </div>
+                            <button class="btn-primary" id="btn-reg-income" style="width: 100%; margin-top: 16px; background-color: #2ecc71;">Guardar Ingreso</button>
+                        </div>
+                        
+                        <!-- Registrar Gasto -->
+                        <div>
+                            <h3 style="font-size: 16px; margin-bottom: 16px; color: #e74c3c;"><i class="fas fa-minus-circle"></i> Registrar Gasto</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <input type="date" id="exp-date" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                <select id="exp-wallet" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                    <option value="val-efectivo">Efectivo</option>
+                                    <option value="val-banco">Bancolombia</option>
+                                </select>
+                                <input type="text" id="exp-desc" placeholder="Descripción" class="btn-outline" style="width: 100%; border-color: #ddd; grid-column: span 2;">
+                                <select id="exp-cat" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                                    <option value="" disabled selected>Categoría</option>
+                                    <!-- Dinámico -->
+                                </select>
+                                <input type="number" id="exp-amount" placeholder="Monto" class="btn-outline" style="width: 100%; border-color: #ddd;">
+                            </div>
+                            <button class="btn-primary" id="btn-reg-expense" style="width: 100%; margin-top: 16px; background-color: #e74c3c;">Guardar Gasto</button>
                         </div>
                     </div>
-                    <div class="portfolio-content">
-                        <div class="chart-container">
-                            <div class="doughnut-placeholder">
-                                <div class="doughnut-inner">
-                                    <span style="font-size: 10px; color: var(--text-muted);">Portafolio Total</span>
-                                    <span style="font-size: 14px; font-weight: 700;">$10.000</span>
+                </div>
+
+                <div class="grid-dashboard">
+                    <div class="card">
+                        <div class="card-title">Resumen Financiero</div>
+                        <div class="portfolio-content">
+                            <div class="chart-container">
+                                <div class="doughnut-placeholder">
+                                    <div class="doughnut-inner">
+                                        <span style="font-size: 10px; color: var(--text-muted);">Saldo total</span>
+                                        <span style="font-size: 14px; font-weight: 700;" id="total-balance-chart">$10.000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="legend">
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-blue);"></span> Ingresos | $15k</li>
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-orange);"></span> Gastos | $5k</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Estado Global</div>
+                        <ul class="stats-list">
+                            <li class="stat-row"><span>Ingresos</span> <span style="color:#2ecc71">+$15.000</span></li>
+                            <li class="stat-row"><span>Gastos</span> <span style="color:#e74c3c">-$5.000</span></li>
+                            <li class="stat-row"><span>Balance</span> <span id="total-balance-stat">$10.000</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movimientos View -->
+            <div id="view-movimientos" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        Todos los Movimientos
+                        <button class="btn-primary">+ Nuevo</button>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="filters-bar" style="display: flex; gap: 16px; margin-bottom: 24px; background: #f8f9fa; padding: 16px; border-radius: 12px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="filter-group" style="flex: 1; min-width: 150px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Fecha</label>
+                            <input type="date" id="filter-date" class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                        </div>
+                        <div class="filter-group" style="flex: 2; min-width: 200px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Descripción</label>
+                            <input type="text" id="filter-desc" placeholder="Buscar por descripción..." class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 150px;">
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Categoría</label>
+                            <select id="filter-category" class="btn-outline" style="width: 100%; padding: 8px; border-color: #ddd; background: white;">
+                                <option value="">Todas</option>
+                                <!-- Dinámico -->
+                            </select>
+                        </div>
+                        <button class="btn-outline" id="clear-filters" style="padding: 10px; height: 38px; border-color: #ddd; color: var(--text-muted);"><i class="fas fa-undo"></i></button>
+                    </div>
+
+                    <div class="table-container">
+                        <table style="width: 100%; border-collapse: collapse;" id="table-movimientos">
+                            <thead>
+                                <tr style="text-align: left; color: var(--text-muted); border-bottom: 1px solid var(--border-color);">
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 12px;">11 Feb 2026</td>
+                                    <td>Cena restaurante</td>
+                                    <td>Ocio</td>
+                                    <td style="color: #e74c3c;">-$85.000</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px;">10 Feb 2026</td>
+                                    <td>Venta producto</td>
+                                    <td>Extra</td>
+                                    <td style="color: #2ecc71;">+$200.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billeteras View -->
+            <div id="view-billeteras" class="view-section" style="display: none;">
+                <div id="wallets-main-view">
+                    <div id="wallets-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        <!-- Billetera: Efectivo -->
+                        <div class="card" onclick="showWalletDetail('val-efectivo', 'Efectivo')" style="border-left: 4px solid var(--accent-blue); cursor: pointer; transition: transform 0.2s;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Efectivo</h4>
+                                    <h2 style="font-size: 24px; margin-top: 8px;" id="val-efectivo" class="wallet-value">$150.000</h2>
+                                </div>
+                                <i class="fas fa-coins" style="color: var(--accent-blue);"></i>
+                            </div>
+                            <div class="wallet-actions">
+                                <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('val-efectivo', 'add')">
+                                    <i class="fas fa-plus"></i> Ingresar
+                                </button>
+                                <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('val-efectivo', 'withdraw')">
+                                    <i class="fas fa-minus"></i> Retirar
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Billetera: Bancolombia -->
+                        <div class="card" onclick="showWalletDetail('val-banco', 'Bancolombia')" style="border-left: 4px solid var(--accent-gold); cursor: pointer; transition: transform 0.2s;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Bancolombia</h4>
+                                    <h2 style="font-size: 24px; margin-top: 8px;" id="val-banco" class="wallet-value">$8.480.000</h2>
+                                </div>
+                                <i class="fas fa-university" style="color: var(--accent-gold);"></i>
+                            </div>
+                            <div class="wallet-actions">
+                                <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('val-banco', 'add')">
+                                    <i class="fas fa-plus"></i> Ingresar
+                                </button>
+                                <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('val-banco', 'withdraw')">
+                                    <i class="fas fa-minus"></i> Retirar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card" onclick="promptNewWallet()" style="border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <span style="color: var(--text-muted);"><i class="fas fa-plus"></i> Nueva Billetera</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalle de Billetera (Oculto por defecto) -->
+                <div id="wallet-detail-view" style="display: none;">
+                    <button onclick="hideWalletDetail()" class="btn-outline" style="margin-bottom: 16px; border: none; padding: 0; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-arrow-left"></i> Volver a mis billeteras
+                    </button>
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;" id="detail-wallet-name-label">Billetera</h4>
+                                <h2 style="font-size: 28px; margin-top: 8px;" id="detail-wallet-balance">$0</h2>
+                            </div>
+                            <div style="display: flex; gap: 24px;">
+                                <div style="text-align: right;">
+                                    <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Ingresos</p>
+                                    <p style="font-size: 18px; color: #2ecc71; font-weight: 600;" id="detail-wallet-incomes">+$0</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Gastos</p>
+                                    <p style="font-size: 18px; color: #e74c3c; font-weight: 600;" id="detail-wallet-expenses">-$0</p>
                                 </div>
                             </div>
                         </div>
-                        <ul class="legend">
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: var(--accent-blue);"></span>
-                                <strong>60% | Notas estructuradas</strong>
-                            </li>
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: var(--accent-gold);"></span>
-                                <span>25% | Fondos MFX</span>
-                            </li>
-                            <li class="legend-item">
-                                <span class="dot" style="background-color: #d16aff;"></span>
-                                <span>0% | OTC</span>
-                            </li>
-                        </ul>
                     </div>
-                    
-                    <div style="margin-top: 40px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <h4 style="font-size: 14px;">Ganancia | 0.87%</h4>
+                    <div class="card">
+                        <div class="card-title">Historial de Movimientos</div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;" id="table-wallet-details">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 12px; text-transform: uppercase;">
+                                        <th style="padding: 12px;">Fecha</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
                         </div>
-                        <div style="height: 12px; background: #f0f0f0; border-radius: 10px; position: relative; overflow: hidden;">
-                            <div style="width: 87%; height: 100%; background: #232d56; border-radius: 10px;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-muted);">
-                            <span>Inversiones MFX Prime</span>
-                            <span>0.87/100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías View -->
+            <div id="view-categorias" class="view-section" style="display: none;">
+                <div id="categories-main-view">
+                    <div class="card">
+                        <div class="card-title">Gestionar Categorías</div>
+                        <div id="categories-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;">
+                            <div class="card" onclick="showCategoryDetail('Comida')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
+                                <div style="font-size: 24px; margin-bottom: 8px;">🍔</div>
+                                <div style="font-size: 14px; font-weight: 600;">Comida</div>
+                            </div>
+                            <div class="card" onclick="showCategoryDetail('Transporte')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
+                                <div style="font-size: 24px; margin-bottom: 8px;">🚌</div>
+                                <div style="font-size: 14px; font-weight: 600;">Transporte</div>
+                            </div>
+                            <div class="card" onclick="showCategoryDetail('Servicios')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
+                                <div style="font-size: 24px; margin-bottom: 8px;">💡</div>
+                                <div style="font-size: 14px; font-weight: 600;">Servicios</div>
+                            </div>
+                            <div class="card" onclick="promptNewCategory()" style="border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center;">
+                                <div style="font-size: 20px; color: var(--text-muted); margin-bottom: 4px;">+</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Nueva</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-    <script type="module"  src="js/app.js"></script>
+                <!-- Detalle de Categoría (Oculto por defecto) -->
+                <div id="category-detail-view" style="display: none;">
+                    <button onclick="hideCategoryDetail()" class="btn-outline" style="margin-bottom: 16px; border: none; padding: 0; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-arrow-left"></i> Volver a categorías
+                    </button>
+                    <div class="card">
+                        <div class="card-title">
+                            <div>
+                                <span id="detail-category-emoji">🍔</span> 
+                                <span id="detail-category-name">Comida</span>
+                            </div>
+                            <span id="detail-category-total" style="color: #e74c3c;">Total: $0</span>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;" id="table-category-details">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 12px; text-transform: uppercase;">
+                                        <th style="padding: 12px;">Fecha</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Mi Cuenta View -->
+             <div id="view-micuenta" class="view-section" style="display: none;">
+                <div class="card">
+                    <div class="card-title">Perfil de Usuario</div>
+                    <div style="display: flex; gap: 32px; align-items: center;">
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background: #eee;"></div>
+                        <div>
+                            <h2 style="margin-bottom: 4px;">Alberto Rodriguez</h2>
+                            <p style="color: var(--text-muted);">alberto.rod@example.com</p>
+                            <button class="btn-outline" style="margin-top: 12px;">Editar Perfil</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
