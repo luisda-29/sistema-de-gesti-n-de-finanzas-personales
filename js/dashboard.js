@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sincronización Inicial de Saldos
     syncGlobalBalance();
 
+    // Inicializar Selectores de Categorías
+    updateCategorySelectors();
+
     // --- Lógica de Filtros para Movimientos ---
     const filterDate = document.getElementById('filter-date');
     const filterDesc = document.getElementById('filter-desc');
@@ -136,6 +139,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Lógica de Registro de Movimientos (Ingresos/Gastos) ---
+    const btnRegIncome = document.getElementById('btn-reg-income');
+    const btnRegExpense = document.getElementById('btn-reg-expense');
+
+    if (btnRegIncome) {
+        btnRegIncome.addEventListener('click', () => {
+            const date = document.getElementById('inc-date').value;
+            const walletId = document.getElementById('inc-wallet').value;
+            const desc = document.getElementById('inc-desc').value;
+            const cat = document.getElementById('inc-cat').value;
+            const amount = document.getElementById('inc-amount').value;
+
+            if (!date || !desc || !cat || !amount || !walletId) {
+                alert("Por favor completa todos los campos del ingreso.");
+                return;
+            }
+
+            // Actualizar Billetera
+            const balanceElement = document.getElementById(walletId);
+            let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
+            const newVal = currentVal + parseInt(amount);
+            balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
+
+            // Crear fila en tabla
+            createMovementRow(date, desc, cat, amount, 'income', walletId);
+
+            // Sincronizar Global
+            syncGlobalBalance();
+
+            // Limpiar
+            document.getElementById('inc-desc').value = '';
+            document.getElementById('inc-amount').value = '';
+            alert("Ingreso registrado con éxito.");
+        });
+    }
+
+    if (btnRegExpense) {
+        btnRegExpense.addEventListener('click', () => {
+            const date = document.getElementById('exp-date').value;
+            const walletId = document.getElementById('exp-wallet').value;
+            const desc = document.getElementById('exp-desc').value;
+            const cat = document.getElementById('exp-cat').value;
+            const amount = document.getElementById('exp-amount').value;
+
+            if (!date || !desc || !cat || !amount || !walletId) {
+                alert("Por favor completa todos los campos del gasto.");
+                return;
+            }
+
+            // Actualizar Billetera
+            const balanceElement = document.getElementById(walletId);
+            let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
+
+            if (parseInt(amount) > currentVal) {
+                alert("Saldo insuficiente en la billetera seleccionada.");
+                return;
+            }
+
+            const newVal = currentVal - parseInt(amount);
+            balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
+
+            // Crear fila en tabla
+            createMovementRow(date, desc, cat, amount, 'expense', walletId);
+
+            // Sincronizar Global
+            syncGlobalBalance();
+
+            // Limpiar
+            document.getElementById('exp-desc').value = '';
+            document.getElementById('exp-amount').value = '';
+            alert("Gasto registrado con éxito.");
+        });
+    }
+
     // Animación Inicial
     const doughnut = document.querySelector('.doughnut-placeholder');
     if (doughnut) {
@@ -148,9 +225,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Funciones Globales para Billeteras ---
 
+function promptNewWallet() {
+    const name = prompt("Nombre de la nueva billetera:");
+    if (!name) return;
+
+    const balanceStr = prompt(`Saldo inicial para "${name}":`, "0");
+    const balance = parseInt(balanceStr);
+
+    if (isNaN(balance) || balance < 0) {
+        alert("Por favor ingresa un saldo inicial válido.");
+        return;
+    }
+
+    createNewWallet(name, balance);
+}
+
+function createNewWallet(name, balance) {
+    const container = document.getElementById('wallets-container');
+    if (!container) return;
+
+    // Generar un ID único basado en el nombre
+    const walletId = `val-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
+    // Crear la tarjeta
+    const walletCard = document.createElement('div');
+    walletCard.className = 'card';
+    walletCard.onclick = () => showWalletDetail(walletId, name);
+    walletCard.style.borderLeft = '4px solid #3b82f6';
+    walletCard.style.cursor = 'pointer';
+    walletCard.style.transition = 'transform 0.2s';
+    walletCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">${name}</h4>
+                <h2 style="font-size: 24px; margin-top: 8px;" id="${walletId}" class="wallet-value">$${balance.toLocaleString('es-CO')}</h2>
+            </div>
+            <i class="fas fa-wallet" style="color: #3b82f6;"></i>
+        </div>
+        <div class="wallet-actions">
+            <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('${walletId}', 'add')">
+                <i class="fas fa-plus"></i> Ingresar
+            </button>
+            <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('${walletId}', 'withdraw')">
+                <i class="fas fa-minus"></i> Retirar
+            </button>
+        </div>
+    `;
+
+    // Insertar antes del botón "Nueva Billetera"
+    container.insertBefore(walletCard, container.lastElementChild);
+
+    // Añadir a los selects de registro
+    const incWalletSelect = document.getElementById('inc-wallet');
+    const expWalletSelect = document.getElementById('exp-wallet');
+
+    const newOption = `<option value="${walletId}">${name}</option>`;
+    if (incWalletSelect) incWalletSelect.insertAdjacentHTML('beforeend', newOption);
+    if (expWalletSelect) expWalletSelect.insertAdjacentHTML('beforeend', newOption);
+
+    // Sincronizar balances
+    syncGlobalBalance();
+}
+
 function updateWalletBalance(elementId, action) {
     const balanceElement = document.getElementById(elementId);
     if (!balanceElement) return;
+
+    // Obtener el nombre de la billetera desde el h4 superior
+    const walletName = balanceElement.parentElement.querySelector('h4').innerText;
 
     // Obtener valor actual (quitar '$' y puntos)
     let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
@@ -174,15 +316,27 @@ function updateWalletBalance(elementId, action) {
     // Actualizar visualmente la billetera
     balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
 
+    // --- REGISTRAR MOVIMIENTO AUTOMÁTICO ---
+    const today = new Date().toISOString().split('T')[0];
+    const description = `${action === 'add' ? 'Ingreso' : 'Retiro'} manual - ${walletName}`;
+    const category = "Ajuste";
+    const type = action === 'add' ? 'income' : 'expense';
+
+    createMovementRow(today, description, category, amount, type, elementId);
+
     // Sincronizar con el dashboard
     syncGlobalBalance();
 }
 
 function syncGlobalBalance() {
-    const wallet1 = parseInt(document.getElementById('val-efectivo').innerText.replace(/[$.]/g, ''));
-    const wallet2 = parseInt(document.getElementById('val-banco').innerText.replace(/[$.]/g, ''));
+    const walletValues = document.querySelectorAll('.wallet-value');
+    let total = 0;
 
-    const total = wallet1 + wallet2;
+    walletValues.forEach(el => {
+        const val = parseInt(el.innerText.replace(/[$.|]/g, '')) || 0;
+        total += val;
+    });
+
     const formattedTotal = `$${total.toLocaleString('es-CO')}`;
 
     // Actualizar elementos del Dashboard
@@ -191,4 +345,233 @@ function syncGlobalBalance() {
 
     if (dashChart) dashChart.innerText = formattedTotal;
     if (dashStat) dashStat.innerText = formattedTotal;
+}
+
+function createMovementRow(date, desc, cat, amount, type, walletId = "") {
+    const tableBody = document.querySelector('#table-movimientos tbody');
+    if (!tableBody) return;
+
+    // Formatear fecha de YYYY-MM-DD a "DD Mon YYYY" para demo
+    const dateObj = new Date(date + "T00:00:00");
+    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+    const formattedDate = dateObj.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+
+    const row = document.createElement('tr');
+    row.style.borderBottom = '1px solid var(--border-color)';
+    row.setAttribute('data-wallet-id', walletId);
+    row.innerHTML = `
+        <td style="padding: 12px;">${formattedDate}</td>
+        <td>${desc}</td>
+        <td>${cat}</td>
+        <td style="color: ${type === 'income' ? '#2ecc71' : '#e74c3c'};">
+            ${type === 'income' ? '+' : '-'}$${parseInt(amount).toLocaleString('es-CO')}
+        </td>
+    `;
+
+    // Insertar al inicio de la tabla
+    tableBody.prepend(row);
+}
+
+// --- Funciones Globales para Billeteras (Detalle) ---
+
+function showWalletDetail(walletId, walletName) {
+    const mainView = document.getElementById('wallets-main-view');
+    const detailView = document.getElementById('wallet-detail-view');
+    const detailName = document.getElementById('detail-wallet-name-label');
+    const detailBalance = document.getElementById('detail-wallet-balance');
+    const detailIncomes = document.getElementById('detail-wallet-incomes');
+    const detailExpenses = document.getElementById('detail-wallet-expenses');
+    const detailTableBody = document.querySelector('#table-wallet-details tbody');
+
+    if (!mainView || !detailView || !detailTableBody) return;
+
+    // Actualizar Header
+    detailName.innerText = `Historial: ${walletName}`;
+    const currentBalance = document.getElementById(walletId).innerText;
+    detailBalance.innerText = currentBalance;
+
+    detailTableBody.innerHTML = '';
+    let totalIncomes = 0;
+    let totalExpenses = 0;
+
+    // Filtrar movimientos
+    const rows = document.querySelectorAll('#table-movimientos tbody tr');
+    rows.forEach(row => {
+        if (row.getAttribute('data-wallet-id') === walletId) {
+            const cells = row.querySelectorAll('td');
+            const amountText = cells[3].innerText;
+            const amount = parseInt(amountText.replace(/[$.|+-]/g, '')) || 0;
+            const isIncome = amountText.includes('+');
+
+            if (isIncome) totalIncomes += amount;
+            else totalExpenses += amount;
+
+            const newRow = document.createElement('tr');
+            newRow.style.borderBottom = '1px solid var(--border-color)';
+            newRow.innerHTML = `
+                <td style="padding: 12px;">${cells[0].innerText}</td>
+                <td>${cells[1].innerText}</td>
+                <td style="color: ${isIncome ? '#2ecc71' : '#e74c3c'};">
+                    ${amountText}
+                </td>
+            `;
+            detailTableBody.appendChild(newRow);
+        }
+    });
+
+    detailIncomes.innerText = `+$${totalIncomes.toLocaleString('es-CO')}`;
+    detailExpenses.innerText = `-$${totalExpenses.toLocaleString('es-CO')}`;
+
+    mainView.style.display = 'none';
+    detailView.style.display = 'block';
+}
+
+function hideWalletDetail() {
+    const mainView = document.getElementById('wallets-main-view');
+    const detailView = document.getElementById('wallet-detail-view');
+    if (mainView && detailView) {
+        mainView.style.display = 'block';
+        detailView.style.display = 'none';
+    }
+}
+
+// --- Funciones Globales para Categorías ---
+
+function updateCategorySelectors() {
+    const container = document.getElementById('categories-container');
+    const selects = ['inc-cat', 'exp-cat', 'filter-category'];
+
+    if (!container) return;
+
+    // Obtener nombres de categorías desde las cards (excluyendo la de "Nueva")
+    const categories = [];
+    container.querySelectorAll('.card').forEach(card => {
+        const nameDiv = card.querySelector('div:last-child');
+        if (nameDiv && nameDiv.innerText !== 'Nueva') {
+            categories.push(nameDiv.innerText.trim());
+        }
+    });
+
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+
+        // Guardar valor seleccionado actual
+        const currentVal = select.value;
+
+        // Limpiar opciones manteniendo la primera (placeholder/Todas)
+        const firstOption = select.options[0];
+        select.innerHTML = '';
+        select.appendChild(firstOption);
+
+        // Añadir nuevas opciones
+        categories.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            select.appendChild(opt);
+        });
+
+        // Restaurar valor si aún existe
+        select.value = currentVal;
+    });
+}
+
+function promptNewCategory() {
+    const name = prompt("Nombre de la nueva categoría:");
+    if (!name) return;
+
+    const emoji = prompt(`Emoji para "${name}":`, "📁");
+    if (!emoji) return;
+
+    createNewCategory(name, emoji);
+}
+
+function createNewCategory(name, emoji) {
+    const container = document.getElementById('categories-container');
+    if (!container) return;
+
+    // Crear la card de categoría
+    const catCard = document.createElement('div');
+    catCard.className = 'card';
+    catCard.onclick = () => showCategoryDetail(name, emoji);
+    catCard.style.textAlign = 'center';
+    catCard.style.cursor = 'pointer';
+    catCard.style.transition = 'transform 0.2s';
+    catCard.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 8px;">${emoji}</div>
+        <div style="font-size: 14px; font-weight: 600;">${name}</div>
+    `;
+
+    // Insertar antes del botón "Nueva"
+    container.insertBefore(catCard, container.lastElementChild);
+
+    // Sincronizar selectores
+    updateCategorySelectors();
+}
+
+function showCategoryDetail(name, emoji = "") {
+    const mainView = document.getElementById('categories-main-view');
+    const detailView = document.getElementById('category-detail-view');
+    const detailName = document.getElementById('detail-category-name');
+    const detailEmoji = document.getElementById('detail-category-emoji');
+    const detailTotal = document.getElementById('detail-category-total');
+    const detailTableBody = document.querySelector('#table-category-details tbody');
+
+    if (!mainView || !detailView || !detailTableBody) return;
+
+    // Actualizar Header del Detalle
+    detailName.innerText = name;
+    if (emoji) detailEmoji.innerText = emoji;
+
+    // Limpiar tabla de detalles
+    detailTableBody.innerHTML = '';
+    let total = 0;
+
+    // Buscar movimientos en la tabla principal
+    const mainRows = document.querySelectorAll('#table-movimientos tbody tr');
+    mainRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 4) return;
+
+        const catCell = cells[2].innerText.trim();
+        if (catCell === name) {
+            const date = cells[0].innerText;
+            const desc = cells[1].innerText;
+            const amountText = cells[3].innerText;
+            const amount = parseInt(amountText.replace(/[$.|+-]/g, '')) || 0;
+            const isExpense = amountText.includes('-');
+
+            total += isExpense ? -amount : amount;
+
+            const newRow = document.createElement('tr');
+            newRow.style.borderBottom = '1px solid var(--border-color)';
+            newRow.innerHTML = `
+                <td style="padding: 12px;">${date}</td>
+                <td>${desc}</td>
+                <td style="color: ${isExpense ? '#e74c3c' : '#2ecc71'};">
+                    ${amountText}
+                </td>
+            `;
+            detailTableBody.appendChild(newRow);
+        }
+    });
+
+    // Actualizar Total
+    detailTotal.innerText = `Total: $${Math.abs(total).toLocaleString('es-CO')}`;
+    detailTotal.style.color = total >= 0 ? '#2ecc71' : '#e74c3c';
+
+    // Cambiar vista
+    mainView.style.display = 'none';
+    detailView.style.display = 'block';
+}
+
+function hideCategoryDetail() {
+    const mainView = document.getElementById('categories-main-view');
+    const detailView = document.getElementById('category-detail-view');
+
+    if (mainView && detailView) {
+        mainView.style.display = 'block';
+        detailView.style.display = 'none';
+    }
 }
