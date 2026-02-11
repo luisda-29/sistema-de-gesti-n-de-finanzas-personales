@@ -1,138 +1,201 @@
-# Dashboard de Finanzas Personales
+# Sistema de Gestión de Finanzas Personales
 
-## Descripcion del Proyecto
+Sistema web para gestionar finanzas personales con autenticación de usuarios, creación de categorías y control de balances.
 
-Aplicacion web para gestionar finanzas personales sin backend. El usuario puede registrar ingresos y gastos, organizarlos por billeteras y categorias, y visualizar su estado financiero con filtros por fecha y categoria.
+## 🎯 Características
 
-Toda la informacion se almacena en `localStorage`.
+- ✅ **Autenticación de Usuarios**: Login y registro con email y contraseña
+- ✅ **Gestión de Categorías**: CRUD completo de categorías de gasto
+- ✅ **Control de Balances**: Seguimiento de dinero en diferentes categorías
+- ✅ **Persistencia de Datos**: LocalStorage para almacenamiento
+- ✅ **Arquitectura Modular**: Separación de responsabilidades
+- ✅ **Polimorfismo**: Múltiples estrategias de autenticación
 
-## Objetivo del MVP
+## 🏗️ Arquitectura Refactorizada
 
-Entregar un dashboard funcional que permita:
+El proyecto implementa patrones de diseño profesionales:
 
-- Registrar y editar movimientos financieros.
-- Consultar saldo global y por billetera.
-- Filtrar movimientos por fecha y categoria.
-- Mantener los datos al recargar la pagina.
+### Principios Aplicados
 
-## Alcance Funcional (MVP)
+1. **Separación de Responsabilidades (SRP)**
+   - Cada componente tiene una única responsabilidad
+   - Interfaces bien definidas
 
-### 1) Dashboard financiero
+2. **Polimorfismo (Estrategias de Autenticación)**
+   - EmailPasswordAuth: Autenticación por email/contraseña
+   - Fácil de extender para agregar más estrategias (Google, 2FA, etc.)
 
-- Mostrar `saldo total`.
-- Mostrar `total ingresos`.
-- Mostrar `total gastos`.
-- Mostrar `balance` (ingresos - gastos).
+3. **Inyección de Dependencias**
+   - Los componentes reciben sus dependencias en el constructor
+   - Mayor flexibilidad y testabilidad
 
-### 2) CRUD de movimientos
+4. **Patrón Adaptador**
+   - LocalStorageAdapter implementa la interfaz IStorage
+   - Fácil cambiar a IndexedDB u otro sistema
 
-- Crear movimiento (`tipo`, `monto`, `fecha`, `categoria`, `billetera`, `descripcion opcional`).
-- Listar movimientos en tabla o lista.
-- Editar movimiento existente.
-- Eliminar movimiento.
+## 📂 Estructura del Proyecto
 
-### 3) Gestion de billeteras
+```
+js/
+├── interfaces/                  # Definiciones de contratos
+│   ├── IAuthStrategy.js         # Estrategias de autenticación
+│   └── IStorage.js              # Adaptadores de almacenamiento
+│
+├── auth/                        # Implementaciones de autenticación
+│   └── EmailPasswordAuth.js     # Email/Contraseña
+│
+├── storage/                     # Adaptadores de almacenamiento
+│   └── LocalStorageAdapter.js   # LocalStorage implementation
+│
+├── managers/                    # Lógica de negocio
+│   ├── StorageManager.js        # Interfaz centralizada de storage
+│   ├── AuthManager.js           # Orquestación de autenticación
+│   └── CategoryManager.js       # CRUD de categorías
+│
+├── controllers/                 # UI Controllers
+│   └── UIController.js          # Control de interfaz
+│
+└── app.js                       # Archivo principal
 
-- Crear billetera.
-- Editar nombre de billetera.
-- Eliminar billetera sin romper datos existentes.
-- Visualizar saldo por billetera.
-
-### 4) Gestion de categorias
-
-- Crear categorias personalizadas.
-- Editar categorias.
-- Eliminar categorias.
-- Asignar categoria a cada movimiento.
-
-### 5) Filtros
-
-- Filtro por rango de fechas.
-- Filtro por categoria.
-- Filtro por tipo (`ingreso` o `gasto`).
-- Los filtros deben actualizar resumen y listado.
-
-## Criterios de Aceptacion
-
-- Si creo un ingreso, el saldo total aumenta correctamente.
-- Si creo un gasto, el saldo total disminuye correctamente.
-- Si edito un movimiento, los totales se recalculan sin recargar.
-- Si elimino un movimiento, desaparece del listado y se recalculan metricas.
-- Si recargo la pagina, los datos permanecen.
-- Si aplico filtros, solo se muestran los movimientos que cumplen la condicion.
-- Si no hay movimientos, la interfaz no debe romperse.
-- El layout debe ser usable en movil y escritorio.
-
-## Reglas Tecnicas
-
-- Sin backend.
-- Sin base de datos externa.
-- Persistencia obligatoria con `localStorage`.
-- Implementacion con `HTML`, `CSS`/`Bootstrap` y `JavaScript` vanilla.
-- Codigo organizado en modulos por responsabilidad.
-
-## Estructura Sugerida
-
-```text
-/finance-dashboard
-|
-|-- index.html
-|-- /css
-|   |-- styles.css
-|-- /js
-|   |-- app.js
-|   |-- storage.js
-|   |-- ui.js
-|   |-- filters.js
-|   |-- validators.js
-|-- README.md
+index.html                       # Interfaz web
+ARCHITECTURE.md                  # Documentación de arquitectura
+EJEMPLOS_USO.js                  # Ejemplos de uso
 ```
 
-## Modelo de Datos Minimo (Referencia)
+## 🚀 Cómo Funciona
 
-```json
-{
-  "wallets": [
-    { "id": "w1", "name": "Efectivo" }
-  ],
-  "categories": [
-    { "id": "c1", "name": "Alimentacion", "type": "gasto" },
-    { "id": "c2", "name": "Salario", "type": "ingreso" }
-  ],
-  "transactions": [
-    {
-      "id": "t1",
-      "type": "gasto",
-      "amount": 50000,
-      "date": "2026-02-11",
-      "categoryId": "c1",
-      "walletId": "w1",
-      "description": "Supermercado"
-    }
-  ]
+### Flujo de Autenticación
+
+```
+Usuario → UI → AuthManager → EmailPasswordAuth → StorageManager → LocalStorage
+                  ↓
+            Usuario autenticado → Dashboard
+```
+
+### Flujo de Categorías
+
+```
+Usuario → CategoryManager → StorageManager → LocalStorage
+              ↓
+         Categorías actualizadas → UIController → Renderizar UI
+```
+
+## 📋 Cómo Usar
+
+### 1. **Registro de Usuario**
+
+```javascript
+// Los usuarios se registran directamente desde la UI
+// O programáticamente:
+const usuario = await authManager.register({
+    name: 'Juan Pérez',
+    email: 'juan@example.com',
+    password: 'password123'
+});
+```
+
+### 2. **Iniciar Sesión**
+
+```javascript
+// Desde la UI o programáticamente:
+const usuario = await authManager.login({
+    email: 'juan@example.com',
+    password: 'password123'
+});
+```
+
+### 3. **Trabajar con Categorías**
+
+```javascript
+const userId = authManager.getCurrentUser().id;
+
+// Crear categoría
+const categoria = categoryManager.createCategory(userId, {
+    name: 'Entretenimiento',
+    type: 'Gasto',
+    balance: 100
+});
+
+// Obtener categorías
+const categorias = categoryManager.getCategories(userId);
+
+// Actualizar categoría
+categoryManager.updateCategory(userId, categoria.id, {
+    balance: 150
+});
+
+// Eliminar categoría
+categoryManager.deleteCategory(userId, categoria.id);
+```
+
+## 🔐 Seguridad
+
+### Implementado
+- Validación de email con expresión regular
+- Requisito mínimo de contraseña (6 caracteres)
+- Verificación de email único en el registro
+- Validación de datos en múltiples niveles
+
+### Futuro
+- Hash de contraseñas (bcrypt)
+- JWT para autenticación más segura
+- Autenticación multifactor (2FA)
+- HTTPS obligatorio
+
+## 🔄 Extensibilidad
+
+### Agregar nueva estrategia de autenticación
+
+```javascript
+import { IAuthStrategy } from './interfaces/IAuthStrategy.js';
+
+export class GoogleAuth extends IAuthStrategy {
+    async authenticate(credentials) { /* ... */ }
+    async register(userData) { /* ... */ }
+    validateCredentials(credentials) { /* ... */ }
+    getStrategyName() { return 'google-auth'; }
 }
+
+// Usar
+const googleAuthStrategy = new GoogleAuth(storageManager);
+authManager.setStrategy(googleAuthStrategy);
 ```
 
-## Checklist de Implementacion
+### Cambiar adaptador de almacenamiento
 
-- [ ] Estructura base HTML creada.
-- [ ] Dashboard con tarjetas de resumen operativo.
-- [ ] Formularios para CRUD de movimientos, billeteras y categorias.
-- [ ] Listado de movimientos con acciones editar/eliminar.
-- [ ] Filtros funcionales por fecha, categoria y tipo.
-- [ ] Persistencia completa en `localStorage`.
-- [ ] Validaciones basicas (monto > 0, fecha valida, campos obligatorios).
-- [ ] Prueba manual de flujo completo (crear, editar, eliminar, recargar).
-- [ ] Ajuste responsive para movil.
+```javascript
+import { IndexedDBAdapter } from './storage/IndexedDBAdapter.js';
 
-## Mejoras Futuras (Post-MVP)
+const storageAdapter = new IndexedDBAdapter('finanzas');
+const storageManager = new StorageManager(storageAdapter);
+```
 
-- Graficos con Chart.js.
-- Exportar movimientos a CSV.
-- Importar datos desde CSV.
-- Modo oscuro.
-- Presupuestos mensuales con alertas.
+## 📖 Documentación Adicional
 
-## Autor
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Documentación detallada de la arquitectura
+- **[EJEMPLOS_USO.js](EJEMPLOS_USO.js)** - Ejemplos de uso de todos los componentes
 
-Proyecto con fines educativos y practicos.
+## 🛠️ Tecnologías Utilizadas
+
+- **JavaScript ES6+**: Módulos, clases, async/await
+- **HTML5**: Interfaz de usuario
+- **LocalStorage API**: Persistencia de datos
+- **DOM API**: Manipulación de interfaz
+
+## 📝 Cambios Realizados
+
+### De la versión anterior a esta:
+
+| Aspecto | Antes | Ahora |
+|--------|-------|-------|
+| Organización | Todo en app.js | Separado por responsabilidades |
+| Almacenamiento | Funciones simples | StorageManager + Adaptadores |
+| Autenticación | Código directo | AuthManager + Estrategias |
+| Categorías | Funciones simples | CategoryManager con CRUD |
+| UI | Mezcla de lógica y UI | UIController separado |
+| Extensibilidad | Difícil | Fácil con interfaces |
+| Testing | Complejo | Componentes independientes |
+
+## 💡 Conclusión
+
+Esta refactorización convierte el proyecto en una base profesional y profesional, lista para escalar y mantener. Cada componente puede usarse de forma independiente y la arquitectura permite agregar nuevas características sin afectar el código existente.
