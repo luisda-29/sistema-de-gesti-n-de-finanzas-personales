@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestión Financiera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="glass-box">
+            <div class="logo">
+                <i class="fas fa-wallet"></i> Fine<span>nce</span>
+            </div>
+
+            <!-- Formulario de Login -->
+            <div id="login-form">
+                <h2>Bienvenido de nuevo</h2>
+                <p class="subtitle">Ingresa tus credenciales para continuar</p>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <div class="input-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="login-username" placeholder="Tu usuario">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="••••••••">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
+                <p class="switch-form">¿No tienes cuenta? <a href="#" onclick="toggleAuth(event)">Regístrate aquí</a></p>
+            </div>
+
+            <!-- Formulario de Registro (Oculto) -->
+            <div id="register-form" style="display: none;">
+                <h2>Crear una cuenta</h2>
+                <p class="subtitle">Comienza a gestionar tus finanzas hoy</p>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <div class="input-icon">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" id="reg-fullname" placeholder="Ej: Alberto Rodriguez">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <div class="input-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="reg-email" placeholder="ejemplo@correo.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nombre de Usuario</label>
+                    <div class="input-icon">
+                        <i class="fas fa-at"></i>
+                        <input type="text" id="reg-username" placeholder="Tu_Usuario">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="reg-password" placeholder="Crea una contraseña">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="handleRegister()">Registrarme</button>
+                <p class="switch-form">¿Ya tienes cuenta? <a href="#" onclick="toggleAuth(event)">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="js/auth.js"></script>
+</body>
+</html>
