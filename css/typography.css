@@ -1,0 +1,93 @@
+/* ==================== */
+/* TIPOGRAFÍAS */
+/* ==================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ESTILOS DE TEXTO BASE */
+body {
+    background-color: var(--primary-bg);
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* HEADINGS */
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+h2 {
+    font-size: 24px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+/* PÁRRAFOS Y TEXTO */
+p {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+/* LABELS Y PEQUEÑO TEXTO */
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+small {
+    font-size: 11px;
+}
+
+/* TEXTO MUTED */
+.text-muted {
+    color: var(--text-muted);
+}
+
+.text-main {
+    color: var(--text-main);
+}
+
+.text-accent {
+    color: var(--accent-blue);
+}
+
+/* PESO DE FUENTE */
+.fw-300 { font-weight: 300; }
+.fw-400 { font-weight: 400; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+
+/* ALINEACIÓN DE TEXTO */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
