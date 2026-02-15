@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Financiero Premium</title>
+    <script>
+        // Guardia de navegación: Redirigir al login si no hay sesión activa
+        // Usamos el prefijo 'finanzas_' definido en app.js
+        if (!localStorage.getItem('finanzas_currentUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
     <link rel="stylesheet" href="css/styles.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -42,20 +50,27 @@
                     </a>
                 </li>
             </nav>
+            <div class="sidebar-footer" style="padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto;">
+                <a href="#" class="nav-link" onclick="handleLogout(event)" style="color: #e74c3c;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <div class="header-title">
+                <div class="header-title" style="display: flex; align-items: center; gap: 16px;">
+                    <button id="mobile-menu-btn" style="display: none; background: transparent; border: none; font-size: 20px; color: var(--sidebar-bg); cursor: pointer;">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <h1 id="view-title">Dashboard</h1>
                 </div>
                 <div class="header-actions">
                     <div class="user-profile">
-                        <div class="avatar"></div>
+                        <div class="avatar" id="header-avatar" style="background-size: cover; background-position: center;"></div>
                         <div class="user-info">
-                            <span class="name">Alberto Rodriguez</span>
-                            <span class="status">Verificado</span>
+                            <span class="name" id="header-user-name">Alberto Rodriguez</span>
                         </div>
                     </div>
                 </div>
@@ -64,7 +79,7 @@
             <!-- Registration Module (Dashboard) -->
             <div id="view-dashboard" class="view-section">
                 <div class="card" style="margin-bottom: 24px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                    <div class="dashboard-reg-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
                         <!-- Registrar Ingreso -->
                         <div style="border-right: 1px solid var(--border-color); padding-right: 16px;">
                             <h3 style="font-size: 16px; margin-bottom: 16px; color: #2ecc71;"><i class="fas fa-plus-circle"></i> Registrar Ingreso</h3>
@@ -113,22 +128,22 @@
                                 <div class="doughnut-placeholder">
                                     <div class="doughnut-inner">
                                         <span style="font-size: 10px; color: var(--text-muted);">Saldo total</span>
-                                        <span style="font-size: 14px; font-weight: 700;" id="total-balance-chart">$10.000</span>
+                                        <span style="font-size: 14px; font-weight: 700;" id="total-balance-chart">$0</span>
                                     </div>
                                 </div>
                             </div>
                             <ul class="legend">
-                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-blue);"></span> Ingresos | $15k</li>
-                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-orange);"></span> Gastos | $5k</li>
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-blue);"></span> Ingresos | <span id="dash-total-incomes">$0</span></li>
+                                <li class="legend-item"><span class="dot" style="background-color: var(--accent-orange);"></span> Gastos | <span id="dash-total-expenses">$0</span></li>
                             </ul>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-title">Estado Global</div>
                         <ul class="stats-list">
-                            <li class="stat-row"><span>Ingresos</span> <span style="color:#2ecc71">+$15.000</span></li>
-                            <li class="stat-row"><span>Gastos</span> <span style="color:#e74c3c">-$5.000</span></li>
-                            <li class="stat-row"><span>Balance</span> <span id="total-balance-stat">$10.000</span></li>
+                            <li class="stat-row"><span>Ingresos</span> <span style="color:#2ecc71" id="stat-total-incomes">+$0</span></li>
+                            <li class="stat-row"><span>Gastos</span> <span style="color:#e74c3c" id="stat-total-expenses">-$0</span></li>
+                            <li class="stat-row"><span>Balance</span> <span id="total-balance-stat">$0</span></li>
                         </ul>
                     </div>
                 </div>
@@ -172,18 +187,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 12px;">11 Feb 2026</td>
-                                    <td>Cena restaurante</td>
-                                    <td>Ocio</td>
-                                    <td style="color: #e74c3c;">-$85.000</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px;">10 Feb 2026</td>
-                                    <td>Venta producto</td>
-                                    <td>Extra</td>
-                                    <td style="color: #2ecc71;">+$200.000</td>
-                                </tr>
+                                <!-- Dinámico -->
                             </tbody>
                         </table>
                     </div>
@@ -194,42 +198,7 @@
             <div id="view-billeteras" class="view-section" style="display: none;">
                 <div id="wallets-main-view">
                     <div id="wallets-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-                        <!-- Billetera: Efectivo -->
-                        <div class="card" onclick="showWalletDetail('val-efectivo', 'Efectivo')" style="border-left: 4px solid var(--accent-blue); cursor: pointer; transition: transform 0.2s;">
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div>
-                                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Efectivo</h4>
-                                    <h2 style="font-size: 24px; margin-top: 8px;" id="val-efectivo" class="wallet-value">$150.000</h2>
-                                </div>
-                                <i class="fas fa-coins" style="color: var(--accent-blue);"></i>
-                            </div>
-                            <div class="wallet-actions">
-                                <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('val-efectivo', 'add')">
-                                    <i class="fas fa-plus"></i> Ingresar
-                                </button>
-                                <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('val-efectivo', 'withdraw')">
-                                    <i class="fas fa-minus"></i> Retirar
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Billetera: Bancolombia -->
-                        <div class="card" onclick="showWalletDetail('val-banco', 'Bancolombia')" style="border-left: 4px solid var(--accent-gold); cursor: pointer; transition: transform 0.2s;">
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div>
-                                    <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Bancolombia</h4>
-                                    <h2 style="font-size: 24px; margin-top: 8px;" id="val-banco" class="wallet-value">$8.480.000</h2>
-                                </div>
-                                <i class="fas fa-university" style="color: var(--accent-gold);"></i>
-                            </div>
-                            <div class="wallet-actions">
-                                <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('val-banco', 'add')">
-                                    <i class="fas fa-plus"></i> Ingresar
-                                </button>
-                                <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('val-banco', 'withdraw')">
-                                    <i class="fas fa-minus"></i> Retirar
-                                </button>
-                            </div>
-                        </div>
+                        <!-- Dinámico -->
                         <div class="card" onclick="promptNewWallet()" style="border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                             <span style="color: var(--text-muted);"><i class="fas fa-plus"></i> Nueva Billetera</span>
                         </div>
@@ -285,24 +254,13 @@
                     <div class="card">
                         <div class="card-title">Gestionar Categorías</div>
                         <div id="categories-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;">
-                            <div class="card" onclick="showCategoryDetail('Comida')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
-                                <div style="font-size: 24px; margin-bottom: 8px;">🍔</div>
-                                <div style="font-size: 14px; font-weight: 600;">Comida</div>
-                            </div>
-                            <div class="card" onclick="showCategoryDetail('Transporte')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
-                                <div style="font-size: 24px; margin-bottom: 8px;">🚌</div>
-                                <div style="font-size: 14px; font-weight: 600;">Transporte</div>
-                            </div>
-                            <div class="card" onclick="showCategoryDetail('Servicios')" style="text-align: center; cursor: pointer; transition: transform 0.2s;">
-                                <div style="font-size: 24px; margin-bottom: 8px;">💡</div>
-                                <div style="font-size: 14px; font-weight: 600;">Servicios</div>
-                            </div>
+                            <!-- Dinámico -->
                             <div class="card" onclick="promptNewCategory()" style="border: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center;">
                                 <div style="font-size: 20px; color: var(--text-muted); margin-bottom: 4px;">+</div>
                                 <div style="font-size: 12px; color: var(--text-muted);">Nueva</div>
                             </div>
                         </div>
-                    </div>
+                </div>
                 </div>
 
                 <!-- Detalle de Categoría (Oculto por defecto) -->
@@ -338,17 +296,60 @@
 
              <!-- Mi Cuenta View -->
              <div id="view-micuenta" class="view-section" style="display: none;">
-                <div class="card">
-                    <div class="card-title">Perfil de Usuario</div>
-                    <div style="display: flex; gap: 32px; align-items: center;">
-                        <div style="width: 100px; height: 100px; border-radius: 50%; background: #eee;"></div>
-                        <div>
-                            <h2 style="margin-bottom: 4px;">Alberto Rodriguez</h2>
-                            <p style="color: var(--text-muted);">alberto.rod@example.com</p>
-                            <button class="btn-outline" style="margin-top: 12px;">Editar Perfil</button>
+                <div class="account-grid">
+                    <!-- Sidebar del Perfil -->
+                    <div class="card account-sidebar-card">
+                        <div class="profile-avatar-large" id="profile-avatar" title="Haga clic para cambiar foto"></div>
+                        <h2 id="profile-name-display" style="margin-bottom: 4px;">Alberto Rodriguez</h2>
+                        <p id="profile-email-display" style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">alberto.rod@example.com</p>
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                            <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Estado de cuenta</p>
+                            <span class="badge badge-low">Verificado</span>
+                        </div>
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                            <button class="btn-wallet-action withdraw" style="width: 100%; justify-content: center; padding: 12px; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;" onclick="deleteAccount()">
+                                <i class="fas fa-trash-alt"></i> Eliminar Cuenta
+                            </button>
+                            <p style="font-size: 11px; color: #991b1b; margin-top: 8px; font-style: italic;">Esta acción es irreversible y borrará todos tus datos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Formularios de Ajustes -->
+                    <div class="settings-content">
+                        <!-- Información Personal -->
+                        <div class="card settings-card">
+                            <div class="card-title">Información Personal</div>
+                            <div class="settings-group">
+                                <label for="edit-name">Nombre Completo</label>
+                                <input type="text" id="edit-name" class="settings-input" placeholder="Tu nombre">
+                            </div>
+                            <div class="settings-group">
+                                <label for="edit-email">Correo Electrónico</label>
+                                <input type="email" id="edit-email" class="settings-input" placeholder="ejemplo@correo.com">
+                            </div>
+                            <div class="settings-footer">
+                                <button class="btn-primary" onclick="savePersonalData()">Guardar Cambios</button>
+                            </div>
+                        </div>
+
+                        <!-- Seguridad -->
+                        <div class="card settings-card">
+                            <div class="card-title">Seguridad</div>
+                            <div class="settings-group">
+                                <label for="edit-password">Nueva Contraseña</label>
+                                <input type="password" id="edit-password" class="settings-input" placeholder="••••••••">
+                            </div>
+                            <div class="settings-group">
+                                <label for="confirm-password">Confirmar Contraseña</label>
+                                <input type="password" id="confirm-password" class="settings-input" placeholder="••••••••">
+                            </div>
+                            <div class="settings-footer">
+                                <button class="btn-outline" onclick="updatePassword()">Actualizar Contraseña</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
             </div>
 
         </main>

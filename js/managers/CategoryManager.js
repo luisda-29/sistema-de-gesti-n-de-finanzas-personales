@@ -33,7 +33,7 @@ export class CategoryManager {
         const categories = this.storage.getCategories(userId);
 
         const newCategory = {
-            id: Date.now().toString(),
+            id: `${Date.now()}-${Math.floor(Math.random() * 1000)}`,
             name: categoryData.name,
             type: categoryData.type,
             balance: categoryData.balance || 0,
@@ -108,10 +108,10 @@ export class CategoryManager {
     }
 
     _validateCategory(categoryData) {
-        return categoryData && 
-               categoryData.name && 
-               categoryData.type &&
-               typeof categoryData.name === 'string' &&
-               categoryData.name.trim().length > 0;
+        return categoryData &&
+            categoryData.name &&
+            categoryData.type &&
+            typeof categoryData.name === 'string' &&
+            categoryData.name.trim().length > 0;
     }
 }
