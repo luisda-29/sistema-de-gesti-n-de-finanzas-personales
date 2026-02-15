@@ -16,9 +16,9 @@ export class EmailPasswordAuth extends IAuthStrategy {
             return null;
         }
 
-        const users = this.storage.get('users', []);
+        const users = this.storage.getUsers();
         const user = users.find(u => u.email === credentials.email && u.password === credentials.password);
-        
+
         return user || null;
     }
 
@@ -27,15 +27,21 @@ export class EmailPasswordAuth extends IAuthStrategy {
             return null;
         }
 
-        const users = this.storage.get('users', []);
+        const users = this.storage.getUsers();
 
         // Verificar si el email ya está registrado
         if (users.find(u => u.email === userData.email)) {
             throw new Error('Email ya registrado');
         }
 
+        // Calcular el próximo ID secuencial disponible (1, 2, 3...)
+        let nextId = 1;
+        while (users.some(u => u.id === nextId.toString())) {
+            nextId++;
+        }
+
         const newUser = {
-            id: Date.now().toString(),
+            id: nextId.toString(),
             name: userData.name,
             email: userData.email,
             password: userData.password, // En producción usar hash
@@ -44,16 +50,16 @@ export class EmailPasswordAuth extends IAuthStrategy {
         };
 
         users.push(newUser);
-        this.storage.set('users', users);
+        this.storage.saveUsers(users);
 
         return newUser;
     }
 
     validateCredentials(credentials) {
-        return credentials && 
-               credentials.email && 
-               credentials.password &&
-               this._isValidEmail(credentials.email);
+        return credentials &&
+            credentials.email &&
+            credentials.password &&
+            this._isValidEmail(credentials.email);
     }
 
     _validateRegistration(userData) {

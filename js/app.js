@@ -43,16 +43,16 @@ function showLogin() {
  */
 async function register() {
     const userData = uiController.getRegisterFormData();
-    
+
     try {
         const user = await authManager.register(userData);
         if (user) {
             uiController.setRegisterMessage('¡Cuenta creada! Ahora inicia sesión.', false);
             uiController.clearRegisterForm();
-            
-            // Crear categorías por defecto
-            categoryManager.createDefaultCategories(user.id);
-            
+
+            // Desactivado para permitir inicio limpio
+            // categoryManager.createDefaultCategories(user.id);
+
             // Mostrar login después de 1.5 segundos
             setTimeout(() => showLogin(), 1500);
         }
@@ -66,12 +66,13 @@ async function register() {
  */
 async function login() {
     const credentials = uiController.getLoginFormData();
-    
+
     try {
         const user = await authManager.login(credentials);
         if (user) {
             uiController.clearLoginForm();
-            showDashboard();
+            // Redirigir al dashboard principal
+            window.location.href = 'index.html';
         } else {
             uiController.setLoginMessage('Credenciales incorrectas', true);
         }
@@ -98,7 +99,7 @@ function logout() {
 function showDashboard() {
     const user = authManager.getCurrentUser();
     if (!user) return;
-    
+
     uiController.showDashboard();
     uiController.loadCategories(user.id);
 }
@@ -109,14 +110,14 @@ function showDashboard() {
 function addCategory() {
     const user = authManager.getCurrentUser();
     if (!user) return;
-    
+
     const categoryData = uiController.getNewCategoryData();
-    
+
     if (!categoryData.name) {
         alert('Ingresa un nombre');
         return;
     }
-    
+
     try {
         categoryManager.createCategory(user.id, categoryData);
         uiController.clearNewCategoryForm();
@@ -130,12 +131,29 @@ function addCategory() {
 /**
  * Verifica si ya está logueado al cargar la página
  */
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', () => {
     const user = authManager.getCurrentUser();
+
+    // Configurar listeners de UI si estamos en la página de login
+    const btnLogin = document.getElementById('btn-login-submit');
+    const btnRegister = document.getElementById('btn-register-submit');
+    const linkShowRegister = document.getElementById('link-show-register');
+    const linkShowLogin = document.getElementById('link-show-login');
+
+    if (btnLogin) btnLogin.addEventListener('click', login);
+    if (btnRegister) btnRegister.addEventListener('click', register);
+    if (linkShowRegister) linkShowRegister.addEventListener('click', (e) => { e.preventDefault(); showRegister(); });
+    if (linkShowLogin) linkShowLogin.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+
     if (user && authManager.isAuthenticated()) {
-        showDashboard();
+        // Si estamos en login.html y ya hay sesión, ir al index
+        if (window.location.pathname.endsWith('login.html')) {
+            window.location.href = 'index.html';
+        }
     } else {
-        uiController.showAuthContainer();
-        uiController.showLoginForm();
+        // Solo mostrar forms si estamos en login.html
+        if (window.location.pathname.endsWith('login.html')) {
+            showLogin();
+        }
     }
-};
+});

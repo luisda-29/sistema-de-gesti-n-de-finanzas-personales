@@ -254,9 +254,8 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: conic-gradient(var(--accent-blue) 0% 60%,
-            var(--accent-gold) 60% 85%,
-            #d16aff 85% 100%);
+    background: conic-gradient(var(--accent-blue) 0% 70%,
+            var(--accent-gold) 70% 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -449,4 +448,179 @@ body {
     background: #222;
     border-color: #333;
     color: #fff;
+}
+
+/* Account Settings Styles */
+.account-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.account-sidebar-card {
+    text-align: center;
+    padding: 32px 24px;
+}
+
+.profile-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    background-color: #eee;
+    background-size: cover;
+    background-position: center;
+    border: 4px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-avatar-large:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-gold);
+}
+
+.profile-avatar-large::after {
+    content: '\f030';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--accent-gold);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 2px solid white;
+}
+
+.settings-card {
+    margin-bottom: 24px;
+}
+
+.settings-group {
+    margin-bottom: 20px;
+}
+
+.settings-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.settings-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.settings-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(225, 177, 92, 0.1);
+}
+
+.settings-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 992px) {
+    .grid-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+        left: -280px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 10px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    #mobile-menu-btn {
+        display: block !important;
+    }
+
+    .portfolio-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 24px;
+    }
+
+    .account-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-reg-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+
+    .dashboard-reg-grid>div:first-child {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0 !important;
+        padding-bottom: 24px;
+    }
+
+    .header {
+        padding: 12px 16px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .user-info {
+        display: none;
+    }
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.sidebar-overlay.active {
+    display: block;
 }

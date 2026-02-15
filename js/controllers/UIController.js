@@ -14,9 +14,9 @@ export class UIController {
      * Muestra el formulario de login
      */
     showLoginForm() {
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
         if (loginForm) loginForm.style.display = 'block';
         if (registerForm) registerForm.style.display = 'none';
     }
@@ -25,9 +25,9 @@ export class UIController {
      * Muestra el formulario de registro
      */
     showRegisterForm() {
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
         if (loginForm) loginForm.style.display = 'none';
         if (registerForm) registerForm.style.display = 'block';
     }
@@ -67,7 +67,7 @@ export class UIController {
     clearLoginForm() {
         const email = document.getElementById('loginEmail');
         const password = document.getElementById('loginPassword');
-        
+
         if (email) email.value = '';
         if (password) password.value = '';
         this.clearLoginMessage();
@@ -112,7 +112,7 @@ export class UIController {
         const name = document.getElementById('registerName');
         const email = document.getElementById('registerEmail');
         const password = document.getElementById('registerPassword');
-        
+
         if (name) name.value = '';
         if (email) email.value = '';
         if (password) password.value = '';
@@ -127,7 +127,7 @@ export class UIController {
     showDashboard() {
         const authContainer = document.getElementById('authContainer');
         const dashboard = document.getElementById('dashboard');
-        
+
         if (authContainer) authContainer.style.display = 'none';
         if (dashboard) dashboard.style.display = 'block';
     }
@@ -138,7 +138,7 @@ export class UIController {
     showAuthContainer() {
         const authContainer = document.getElementById('authContainer');
         const dashboard = document.getElementById('dashboard');
-        
+
         if (authContainer) authContainer.style.display = 'block';
         if (dashboard) dashboard.style.display = 'none';
     }
@@ -164,14 +164,14 @@ export class UIController {
             div.style.border = '1px solid #ccc';
             div.style.padding = '10px';
             div.style.margin = '5px';
-            
+
             div.innerHTML = `
                 <strong>${cat.name}</strong> (${cat.type})<br>
                 Balance: $${cat.balance}<br>
                 <button onclick="window.uiController.handleEditCategory('${cat.id}')">Editar</button>
                 <button onclick="window.uiController.handleDeleteCategory('${cat.id}')">Eliminar</button>
             `;
-            
+
             container.appendChild(div);
         });
     }

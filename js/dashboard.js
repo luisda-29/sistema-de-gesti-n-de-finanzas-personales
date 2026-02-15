@@ -1,5 +1,164 @@
 // Dashboard Interactions (Functional UI)
 
+function syncUserUI() {
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (!userJson) return;
+
+    try {
+        const user = JSON.parse(userJson);
+
+        // Actualizar Header
+        const headerName = document.getElementById('header-user-name');
+        if (headerName) headerName.innerText = user.name || 'Usuario';
+
+        // Actualizar Sección Perfil (Display)
+        const profileNameDisp = document.getElementById('profile-name-display');
+        const profileEmailDisp = document.getElementById('profile-email-display');
+        if (profileNameDisp) profileNameDisp.innerText = user.name || 'Usuario';
+        if (profileEmailDisp) profileEmailDisp.innerText = user.email || 'correo@ejemplo.com';
+
+        // Actualizar Inputs de Edición
+        const editName = document.getElementById('edit-name');
+        const editEmail = document.getElementById('edit-email');
+        if (editName) editName.value = user.name || '';
+        if (editEmail) editEmail.value = user.email || '';
+
+        // Actualizar Avatares (Imagen)
+        if (user.avatar) {
+            const hAvatar = document.getElementById('header-avatar');
+            const pAvatar = document.getElementById('profile-avatar');
+            if (hAvatar) hAvatar.style.backgroundImage = `url(${user.avatar})`;
+            if (pAvatar) pAvatar.style.backgroundImage = `url(${user.avatar})`;
+        }
+
+    } catch (e) {
+        console.error('Error sincronizando UI de usuario:', e);
+    }
+}
+
+function handleAvatarClick() {
+    const input = document.getElementById('avatar-input');
+    if (input) input.click();
+}
+
+function savePersonalData() {
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (!userJson) return;
+
+    const currentUser = JSON.parse(userJson);
+    const newName = document.getElementById('edit-name').value.trim();
+    const newEmail = document.getElementById('edit-email').value.trim();
+
+    if (!newName || !newEmail) {
+        alert('Nombre y correo no pueden estar vacíos.');
+        return;
+    }
+
+    // 1. Actualizar objeto de sesión
+    currentUser.name = newName;
+    currentUser.email = newEmail;
+
+    // 2. Actualizar en la lista maestra de usuarios
+    const usersJson = localStorage.getItem('finanzas_users');
+    if (usersJson) {
+        let users = JSON.parse(usersJson);
+        const index = users.findIndex(u => u.id === currentUser.id);
+        if (index !== -1) {
+            users[index].name = newName;
+            users[index].email = newEmail;
+            localStorage.setItem('finanzas_users', JSON.stringify(users));
+        }
+    }
+
+    localStorage.setItem('finanzas_currentUser', JSON.stringify(currentUser));
+    syncUserUI();
+    alert('¡Información personal actualizada con éxito!');
+}
+
+function updatePassword() {
+    const pass = document.getElementById('edit-password').value;
+    const confirm = document.getElementById('confirm-password').value;
+
+    if (!pass) {
+        alert('Por favor ingresa una nueva contraseña.');
+        return;
+    }
+
+    if (pass !== confirm) {
+        alert('Las contraseñas no coinciden.');
+        return;
+    }
+
+    if (pass.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres.');
+        return;
+    }
+
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (userJson) {
+        const currentUser = JSON.parse(userJson);
+
+        // Actualizar en la lista maestra
+        const usersJson = localStorage.getItem('finanzas_users');
+        if (usersJson) {
+            let users = JSON.parse(usersJson);
+            const index = users.findIndex(u => u.id === currentUser.id);
+            if (index !== -1) {
+                users[index].password = pass; // Actualizar contraseña real
+                localStorage.setItem('finanzas_users', JSON.stringify(users));
+
+                alert('¡Contraseña actualizada con éxito!');
+                document.getElementById('edit-password').value = '';
+                document.getElementById('confirm-password').value = '';
+            }
+        }
+    }
+}
+
+function handleLogout(e) {
+    if (e) e.preventDefault();
+    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+        localStorage.removeItem('finanzas_currentUser');
+        window.location.href = 'login.html';
+    }
+}
+
+function deleteAccount() {
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (!userJson) return;
+
+    const currentUser = JSON.parse(userJson);
+
+    const confirmPass = prompt("Para eliminar tu cuenta, por favor ingresa tu contraseña actual:");
+    if (!confirmPass) return;
+
+    // 1. Validar contraseña contra la lista maestra
+    const usersJson = localStorage.getItem('finanzas_users');
+    if (usersJson) {
+        let users = JSON.parse(usersJson);
+        const userInDb = users.find(u => u.id === currentUser.id);
+
+        if (!userInDb || userInDb.password !== confirmPass) {
+            alert("Error: La contraseña ingresada es incorrecta.");
+            return;
+        }
+
+        if (confirm(`¿Estás COMPLETAMENTE seguro, ${currentUser.name}? Todos tus datos, billeteras y movimientos se borrarán para siempre.`)) {
+            // 2. Eliminar datos del usuario (Aislamiento)
+            localStorage.removeItem(`finanzas_data_${currentUser.id}`);
+
+            // 3. Eliminar de la lista maestra
+            const updatedUsers = users.filter(u => u.id !== currentUser.id);
+            localStorage.setItem('finanzas_users', JSON.stringify(updatedUsers));
+
+            // 4. Limpiar sesión y salir
+            localStorage.removeItem('finanzas_currentUser');
+            alert("Tu cuenta y todos tus datos han sido eliminados. Lamentamos verte partir.");
+            window.location.href = 'login.html';
+        }
+    }
+}
+
 function showSection(viewId) {
     console.log(`Cambiando a vista: ${viewId}`);
 
@@ -26,6 +185,157 @@ function showSection(viewId) {
     if (titleElement && titleMap[viewId]) {
         titleElement.innerText = titleMap[viewId];
     }
+}
+
+// --- Gestión de Datos (LocalStorage) ---
+
+function getAppData() {
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (!userJson) return { wallets: [], movements: [], categories: [] };
+
+    const user = JSON.parse(userJson);
+    const storageKey = `finanzas_data_${user.id}`;
+    const dataJson = localStorage.getItem(storageKey);
+
+    return dataJson ? JSON.parse(dataJson) : {
+        wallets: [],
+        movements: [],
+        categories: []
+    };
+}
+
+function saveAppData(data) {
+    const userJson = localStorage.getItem('finanzas_currentUser');
+    if (!userJson) return;
+
+    const user = JSON.parse(userJson);
+    const storageKey = `finanzas_data_${user.id}`;
+    localStorage.setItem(storageKey, JSON.stringify(data));
+}
+
+function updateWalletSelectors() {
+    const data = getAppData();
+    const selects = ['inc-wallet', 'exp-wallet'];
+
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+
+        const currentVal = select.value;
+        // Limpiar opciones
+        select.innerHTML = '';
+
+        if (data.wallets.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = "";
+            opt.innerText = "No hay billeteras";
+            opt.disabled = true;
+            opt.selected = true;
+            select.appendChild(opt);
+        } else {
+            data.wallets.forEach(w => {
+                const opt = document.createElement('option');
+                opt.value = w.id;
+                opt.innerText = w.name;
+                select.appendChild(opt);
+            });
+        }
+
+        if (currentVal && data.wallets.find(w => w.id === currentVal)) {
+            select.value = currentVal;
+        }
+    });
+}
+
+function renderAll() {
+    const data = getAppData();
+
+    // 1. Renderizar Billeteras
+    const walletContainer = document.getElementById('wallets-container');
+    if (walletContainer) {
+        // Limpiar excepto el botón "Nueva"
+        const newBtn = walletContainer.lastElementChild;
+        walletContainer.innerHTML = '';
+        [...data.wallets].reverse().forEach(w => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => showWalletDetail(w.id, w.name);
+            card.style.borderLeft = '4px solid var(--accent-blue)';
+            card.style.cursor = 'pointer';
+            card.style.transition = 'transform 0.2s';
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">${w.name}</h4>
+                        <h2 style="font-size: 24px; margin-top: 8px;" id="${w.id}" class="wallet-value">$${w.balance.toLocaleString('es-CO')}</h2>
+                    </div>
+                    <i class="fas fa-wallet" style="color: var(--accent-blue);"></i>
+                </div>
+                <div class="wallet-actions">
+                    <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('${w.id}', 'add')">
+                        <i class="fas fa-plus"></i> Ingresar
+                    </button>
+                    <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('${w.id}', 'withdraw')">
+                        <i class="fas fa-minus"></i> Retirar
+                    </button>
+                </div>
+            `;
+            walletContainer.appendChild(card);
+        });
+        walletContainer.appendChild(newBtn);
+    }
+
+    // 2. Renderizar Categorías
+    const catContainer = document.getElementById('categories-container');
+    if (catContainer) {
+        const newBtn = catContainer.lastElementChild;
+        catContainer.innerHTML = '';
+        data.categories.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => showCategoryDetail(c.name, c.emoji);
+            card.style.textAlign = 'center';
+            card.style.cursor = 'pointer';
+            card.style.transition = 'transform 0.2s';
+            card.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 8px;">${c.emoji}</div>
+                <div style="font-size: 14px; font-weight: 600;">${c.name}</div>
+            `;
+            catContainer.appendChild(card);
+        });
+        catContainer.appendChild(newBtn);
+    }
+
+    // 3. Renderizar Movimientos
+    const tableBody = document.querySelector('#table-movimientos tbody');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+        // Invertimos primero para que a igualdad de fecha, el más reciente (último en el array) quede arriba
+        const sortedMovements = [...data.movements].reverse().sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        sortedMovements.forEach(m => {
+            const dateObj = new Date(m.date + "T00:00:00");
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const formattedDate = dateObj.toLocaleDateString('en-GB', options);
+
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid var(--border-color)';
+            row.innerHTML = `
+                <td style="padding: 12px;">${formattedDate}</td>
+                <td>${m.desc}</td>
+                <td>${m.cat}</td>
+                <td style="color: ${m.type === 'income' ? '#2ecc71' : '#e74c3c'};">
+                    ${m.type === 'income' ? '+' : '-'}$${parseInt(m.amount).toLocaleString('es-CO')}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // 4. Sincronizar Selectores y Balances Globales
+    updateCategorySelectors();
+    updateWalletSelectors();
+    syncGlobalBalance();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,11 +381,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sincronización Inicial de Saldos
-    syncGlobalBalance();
+    // Cargar y Renderizar todo desde LocalStorage
+    renderAll();
+
+    // --- Lógica de Menú Móvil ---
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    if (mobileMenuBtn && sidebar && sidebarOverlay) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Cerrar al hacer clic en un enlace (móvil)
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+    }
 
     // Inicializar Selectores de Categorías
     updateCategorySelectors();
+
+    // --- Lógica de Avatar / Foto de Perfil ---
+    const profileAvatar = document.getElementById('profile-avatar');
+    const avatarInput = document.getElementById('avatar-input');
+
+    if (profileAvatar) {
+        profileAvatar.addEventListener('click', handleAvatarClick);
+    }
+
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Verificar tamaño (opcional, ej: < 2MB para no saturar LocalStorage)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('La imagen es demasiado pesada. Elige una de menos de 2MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const base64Image = event.target.result;
+
+                const userJson = localStorage.getItem('finanzas_currentUser');
+                if (userJson) {
+                    const currentUser = JSON.parse(userJson);
+                    currentUser.avatar = base64Image;
+
+                    // 1. Actualizar en la lista maestra
+                    const usersJson = localStorage.getItem('finanzas_users');
+                    if (usersJson) {
+                        let users = JSON.parse(usersJson);
+                        const index = users.findIndex(u => u.id === currentUser.id);
+                        if (index !== -1) {
+                            users[index].avatar = base64Image;
+                            localStorage.setItem('finanzas_users', JSON.stringify(users));
+                        }
+                    }
+
+                    localStorage.setItem('finanzas_currentUser', JSON.stringify(currentUser));
+                    syncUserUI();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     // --- Lógica de Filtros para Movimientos ---
     const filterDate = document.getElementById('filter-date');
@@ -144,73 +529,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRegExpense = document.getElementById('btn-reg-expense');
 
     if (btnRegIncome) {
-        btnRegIncome.addEventListener('click', () => {
-            const date = document.getElementById('inc-date').value;
-            const walletId = document.getElementById('inc-wallet').value;
-            const desc = document.getElementById('inc-desc').value;
-            const cat = document.getElementById('inc-cat').value;
-            const amount = document.getElementById('inc-amount').value;
-
-            if (!date || !desc || !cat || !amount || !walletId) {
-                alert("Por favor completa todos los campos del ingreso.");
-                return;
-            }
-
-            // Actualizar Billetera
-            const balanceElement = document.getElementById(walletId);
-            let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
-            const newVal = currentVal + parseInt(amount);
-            balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
-
-            // Crear fila en tabla
-            createMovementRow(date, desc, cat, amount, 'income', walletId);
-
-            // Sincronizar Global
-            syncGlobalBalance();
-
-            // Limpiar
-            document.getElementById('inc-desc').value = '';
-            document.getElementById('inc-amount').value = '';
-            alert("Ingreso registrado con éxito.");
-        });
+        btnRegIncome.addEventListener('click', () => registerMovement('income'));
     }
 
     if (btnRegExpense) {
-        btnRegExpense.addEventListener('click', () => {
-            const date = document.getElementById('exp-date').value;
-            const walletId = document.getElementById('exp-wallet').value;
-            const desc = document.getElementById('exp-desc').value;
-            const cat = document.getElementById('exp-cat').value;
-            const amount = document.getElementById('exp-amount').value;
-
-            if (!date || !desc || !cat || !amount || !walletId) {
-                alert("Por favor completa todos los campos del gasto.");
-                return;
-            }
-
-            // Actualizar Billetera
-            const balanceElement = document.getElementById(walletId);
-            let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
-
-            if (parseInt(amount) > currentVal) {
-                alert("Saldo insuficiente en la billetera seleccionada.");
-                return;
-            }
-
-            const newVal = currentVal - parseInt(amount);
-            balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
-
-            // Crear fila en tabla
-            createMovementRow(date, desc, cat, amount, 'expense', walletId);
-
-            // Sincronizar Global
-            syncGlobalBalance();
-
-            // Limpiar
-            document.getElementById('exp-desc').value = '';
-            document.getElementById('exp-amount').value = '';
-            alert("Gasto registrado con éxito.");
-        });
+        btnRegExpense.addEventListener('click', () => registerMovement('expense'));
     }
 
     // Animación Inicial
@@ -221,6 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
             doughnut.style.transform = 'rotate(360deg)';
         }, 300);
     }
+
+    // Cargar datos de usuario
+    syncUserUI();
 });
 
 // --- Funciones Globales para Billeteras ---
@@ -237,65 +563,24 @@ function promptNewWallet() {
         return;
     }
 
-    createNewWallet(name, balance);
-}
-
-function createNewWallet(name, balance) {
-    const container = document.getElementById('wallets-container');
-    if (!container) return;
-
-    // Generar un ID único basado en el nombre
+    const data = getAppData();
     const walletId = `val-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
 
-    // Crear la tarjeta
-    const walletCard = document.createElement('div');
-    walletCard.className = 'card';
-    walletCard.onclick = () => showWalletDetail(walletId, name);
-    walletCard.style.borderLeft = '4px solid #3b82f6';
-    walletCard.style.cursor = 'pointer';
-    walletCard.style.transition = 'transform 0.2s';
-    walletCard.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-                <h4 style="color: var(--text-muted); font-size: 12px; text-transform: uppercase;">${name}</h4>
-                <h2 style="font-size: 24px; margin-top: 8px;" id="${walletId}" class="wallet-value">$${balance.toLocaleString('es-CO')}</h2>
-            </div>
-            <i class="fas fa-wallet" style="color: #3b82f6;"></i>
-        </div>
-        <div class="wallet-actions">
-            <button class="btn-wallet-action add" onclick="event.stopPropagation(); updateWalletBalance('${walletId}', 'add')">
-                <i class="fas fa-plus"></i> Ingresar
-            </button>
-            <button class="btn-wallet-action withdraw" onclick="event.stopPropagation(); updateWalletBalance('${walletId}', 'withdraw')">
-                <i class="fas fa-minus"></i> Retirar
-            </button>
-        </div>
-    `;
+    data.wallets.push({
+        id: walletId,
+        name: name,
+        balance: balance
+    });
 
-    // Insertar antes del botón "Nueva Billetera"
-    container.insertBefore(walletCard, container.lastElementChild);
-
-    // Añadir a los selects de registro
-    const incWalletSelect = document.getElementById('inc-wallet');
-    const expWalletSelect = document.getElementById('exp-wallet');
-
-    const newOption = `<option value="${walletId}">${name}</option>`;
-    if (incWalletSelect) incWalletSelect.insertAdjacentHTML('beforeend', newOption);
-    if (expWalletSelect) expWalletSelect.insertAdjacentHTML('beforeend', newOption);
-
-    // Sincronizar balances
-    syncGlobalBalance();
+    saveAppData(data);
+    renderAll();
+    alert(`Billetera "${name}" creada.`);
 }
 
-function updateWalletBalance(elementId, action) {
-    const balanceElement = document.getElementById(elementId);
-    if (!balanceElement) return;
-
-    // Obtener el nombre de la billetera desde el h4 superior
-    const walletName = balanceElement.parentElement.querySelector('h4').innerText;
-
-    // Obtener valor actual (quitar '$' y puntos)
-    let currentVal = parseInt(balanceElement.innerText.replace(/[$.]/g, ''));
+function updateWalletBalance(walletId, action) {
+    const data = getAppData();
+    const wallet = data.wallets.find(w => w.id === walletId);
+    if (!wallet) return;
 
     const amountStr = prompt(`Monto a ${action === 'add' ? 'ingresar' : 'retirar'}:`);
     const amount = parseInt(amountStr);
@@ -305,36 +590,44 @@ function updateWalletBalance(elementId, action) {
         return;
     }
 
-    if (action === 'withdraw' && amount > currentVal) {
+    if (action === 'withdraw' && amount > wallet.balance) {
         alert("Saldo insuficiente en esta billetera.");
         return;
     }
 
-    // Calcular nuevo saldo
-    const newVal = action === 'add' ? currentVal + amount : currentVal - amount;
+    // Actualizar saldo
+    wallet.balance = action === 'add' ? wallet.balance + amount : wallet.balance - amount;
 
-    // Actualizar visualmente la billetera
-    balanceElement.innerText = `$${newVal.toLocaleString('es-CO')}`;
+    // Registrar movimiento (Fecha Local)
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
 
-    // --- REGISTRAR MOVIMIENTO AUTOMÁTICO ---
-    const today = new Date().toISOString().split('T')[0];
-    const description = `${action === 'add' ? 'Ingreso' : 'Retiro'} manual - ${walletName}`;
-    const category = "Ajuste";
-    const type = action === 'add' ? 'income' : 'expense';
+    data.movements.push({
+        date: today,
+        desc: `${action === 'add' ? 'Ingreso' : 'Retiro'} manual - ${wallet.name}`,
+        cat: "Ajuste",
+        amount: amount,
+        type: action === 'add' ? 'income' : 'expense',
+        walletId: walletId
+    });
 
-    createMovementRow(today, description, category, amount, type, elementId);
-
-    // Sincronizar con el dashboard
-    syncGlobalBalance();
+    saveAppData(data);
+    renderAll();
 }
 
 function syncGlobalBalance() {
-    const walletValues = document.querySelectorAll('.wallet-value');
+    const data = getAppData();
     let total = 0;
+    let totalIncomes = 0;
+    let totalExpenses = 0;
 
-    walletValues.forEach(el => {
-        const val = parseInt(el.innerText.replace(/[$.|]/g, '')) || 0;
-        total += val;
+    data.wallets.forEach(w => total += w.balance);
+    data.movements.forEach(m => {
+        if (m.type === 'income') totalIncomes += m.amount;
+        else totalExpenses += m.amount;
     });
 
     const formattedTotal = `$${total.toLocaleString('es-CO')}`;
@@ -342,34 +635,63 @@ function syncGlobalBalance() {
     // Actualizar elementos del Dashboard
     const dashChart = document.getElementById('total-balance-chart');
     const dashStat = document.getElementById('total-balance-stat');
+    const dIncomes = document.getElementById('dash-total-incomes');
+    const dExpenses = document.getElementById('dash-total-expenses');
+    const sIncomes = document.getElementById('stat-total-incomes');
+    const sExpenses = document.getElementById('stat-total-expenses');
 
     if (dashChart) dashChart.innerText = formattedTotal;
     if (dashStat) dashStat.innerText = formattedTotal;
+    if (dIncomes) dIncomes.innerText = `$${totalIncomes.toLocaleString('es-CO')}`;
+    if (dExpenses) dExpenses.innerText = `$${totalExpenses.toLocaleString('es-CO')}`;
+    if (sIncomes) sIncomes.innerText = `+$${totalIncomes.toLocaleString('es-CO')}`;
+    if (sExpenses) sExpenses.innerText = `-$${totalExpenses.toLocaleString('es-CO')}`;
 }
 
-function createMovementRow(date, desc, cat, amount, type, walletId = "") {
-    const tableBody = document.querySelector('#table-movimientos tbody');
-    if (!tableBody) return;
+// Registro desde el Dashboard (Formularios)
+// Se han movido a listeners dentro de DOMContentLoaded o funciones específicas
 
-    // Formatear fecha de YYYY-MM-DD a "DD Mon YYYY" para demo
-    const dateObj = new Date(date + "T00:00:00");
-    const options = { day: '2-digit', month: 'short', year: 'numeric' };
-    const formattedDate = dateObj.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+function registerMovement(type) {
+    const dateInput = type === 'income' ? 'inc-date' : 'exp-date';
+    const walletSelect = type === 'income' ? 'inc-wallet' : 'exp-wallet';
+    const descInput = type === 'income' ? 'inc-desc' : 'exp-desc';
+    const catSelect = type === 'income' ? 'inc-cat' : 'exp-cat';
+    const amountInput = type === 'income' ? 'inc-amount' : 'exp-amount';
 
-    const row = document.createElement('tr');
-    row.style.borderBottom = '1px solid var(--border-color)';
-    row.setAttribute('data-wallet-id', walletId);
-    row.innerHTML = `
-        <td style="padding: 12px;">${formattedDate}</td>
-        <td>${desc}</td>
-        <td>${cat}</td>
-        <td style="color: ${type === 'income' ? '#2ecc71' : '#e74c3c'};">
-            ${type === 'income' ? '+' : '-'}$${parseInt(amount).toLocaleString('es-CO')}
-        </td>
-    `;
+    const date = document.getElementById(dateInput).value;
+    const walletId = document.getElementById(walletSelect).value;
+    const desc = document.getElementById(descInput).value;
+    const cat = document.getElementById(catSelect).value;
+    const amount = parseInt(document.getElementById(amountInput).value);
 
-    // Insertar al inicio de la tabla
-    tableBody.prepend(row);
+    if (!date || !desc || !cat || !amount || !walletId) {
+        alert("Por favor completa todos los campos.");
+        return;
+    }
+
+    const data = getAppData();
+    const wallet = data.wallets.find(w => w.id === walletId);
+
+    if (type === 'expense' && amount > wallet.balance) {
+        alert("Saldo insuficiente en la billetera seleccionada.");
+        return;
+    }
+
+    // Actualizar billetera
+    wallet.balance = type === 'income' ? wallet.balance + amount : wallet.balance - amount;
+
+    // Agregar movimiento
+    data.movements.push({
+        date, desc, cat, amount, type, walletId
+    });
+
+    saveAppData(data);
+    renderAll();
+
+    // Limpiar campos
+    document.getElementById(descInput).value = '';
+    document.getElementById(amountInput).value = '';
+    alert(`${type === 'income' ? 'Ingreso' : 'Gasto'} registrado.`);
 }
 
 // --- Funciones Globales para Billeteras (Detalle) ---
@@ -385,38 +707,36 @@ function showWalletDetail(walletId, walletName) {
 
     if (!mainView || !detailView || !detailTableBody) return;
 
-    // Actualizar Header
+    const data = getAppData();
+    const wallet = data.wallets.find(w => w.id === walletId);
+    if (!wallet) return;
+
     detailName.innerText = `Historial: ${walletName}`;
-    const currentBalance = document.getElementById(walletId).innerText;
-    detailBalance.innerText = currentBalance;
+    detailBalance.innerText = `$${wallet.balance.toLocaleString('es-CO')}`;
 
     detailTableBody.innerHTML = '';
     let totalIncomes = 0;
     let totalExpenses = 0;
 
-    // Filtrar movimientos
-    const rows = document.querySelectorAll('#table-movimientos tbody tr');
-    rows.forEach(row => {
-        if (row.getAttribute('data-wallet-id') === walletId) {
-            const cells = row.querySelectorAll('td');
-            const amountText = cells[3].innerText;
-            const amount = parseInt(amountText.replace(/[$.|+-]/g, '')) || 0;
-            const isIncome = amountText.includes('+');
+    const filteredMovements = data.movements.filter(m => m.walletId === walletId);
+    [...filteredMovements].reverse().sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(m => {
+        if (m.type === 'income') totalIncomes += m.amount;
+        else totalExpenses += m.amount;
 
-            if (isIncome) totalIncomes += amount;
-            else totalExpenses += amount;
+        const dateObj = new Date(m.date + "T00:00:00");
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        const formattedDate = dateObj.toLocaleDateString('en-GB', options);
 
-            const newRow = document.createElement('tr');
-            newRow.style.borderBottom = '1px solid var(--border-color)';
-            newRow.innerHTML = `
-                <td style="padding: 12px;">${cells[0].innerText}</td>
-                <td>${cells[1].innerText}</td>
-                <td style="color: ${isIncome ? '#2ecc71' : '#e74c3c'};">
-                    ${amountText}
-                </td>
-            `;
-            detailTableBody.appendChild(newRow);
-        }
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid var(--border-color)';
+        row.innerHTML = `
+            <td style="padding: 12px;">${formattedDate}</td>
+            <td>${m.desc}</td>
+            <td style="color: ${m.type === 'income' ? '#2ecc71' : '#e74c3c'};">
+                ${m.type === 'income' ? '+' : '-'}$${m.amount.toLocaleString('es-CO')}
+            </td>
+        `;
+        detailTableBody.appendChild(row);
     });
 
     detailIncomes.innerText = `+$${totalIncomes.toLocaleString('es-CO')}`;
@@ -438,41 +758,25 @@ function hideWalletDetail() {
 // --- Funciones Globales para Categorías ---
 
 function updateCategorySelectors() {
-    const container = document.getElementById('categories-container');
+    const data = getAppData();
     const selects = ['inc-cat', 'exp-cat', 'filter-category'];
-
-    if (!container) return;
-
-    // Obtener nombres de categorías desde las cards (excluyendo la de "Nueva")
-    const categories = [];
-    container.querySelectorAll('.card').forEach(card => {
-        const nameDiv = card.querySelector('div:last-child');
-        if (nameDiv && nameDiv.innerText !== 'Nueva') {
-            categories.push(nameDiv.innerText.trim());
-        }
-    });
 
     selects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (!select) return;
 
-        // Guardar valor seleccionado actual
         const currentVal = select.value;
-
-        // Limpiar opciones manteniendo la primera (placeholder/Todas)
         const firstOption = select.options[0];
         select.innerHTML = '';
         select.appendChild(firstOption);
 
-        // Añadir nuevas opciones
-        categories.forEach(cat => {
+        data.categories.forEach(cat => {
             const opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat;
+            opt.value = cat.name;
+            opt.innerText = cat.name;
             select.appendChild(opt);
         });
 
-        // Restaurar valor si aún existe
         select.value = currentVal;
     });
 }
@@ -484,30 +788,10 @@ function promptNewCategory() {
     const emoji = prompt(`Emoji para "${name}":`, "📁");
     if (!emoji) return;
 
-    createNewCategory(name, emoji);
-}
-
-function createNewCategory(name, emoji) {
-    const container = document.getElementById('categories-container');
-    if (!container) return;
-
-    // Crear la card de categoría
-    const catCard = document.createElement('div');
-    catCard.className = 'card';
-    catCard.onclick = () => showCategoryDetail(name, emoji);
-    catCard.style.textAlign = 'center';
-    catCard.style.cursor = 'pointer';
-    catCard.style.transition = 'transform 0.2s';
-    catCard.innerHTML = `
-        <div style="font-size: 24px; margin-bottom: 8px;">${emoji}</div>
-        <div style="font-size: 14px; font-weight: 600;">${name}</div>
-    `;
-
-    // Insertar antes del botón "Nueva"
-    container.insertBefore(catCard, container.lastElementChild);
-
-    // Sincronizar selectores
-    updateCategorySelectors();
+    const data = getAppData();
+    data.categories.push({ name, emoji });
+    saveAppData(data);
+    renderAll();
 }
 
 function showCategoryDetail(name, emoji = "") {
@@ -520,48 +804,36 @@ function showCategoryDetail(name, emoji = "") {
 
     if (!mainView || !detailView || !detailTableBody) return;
 
-    // Actualizar Header del Detalle
     detailName.innerText = name;
     if (emoji) detailEmoji.innerText = emoji;
 
-    // Limpiar tabla de detalles
     detailTableBody.innerHTML = '';
     let total = 0;
 
-    // Buscar movimientos en la tabla principal
-    const mainRows = document.querySelectorAll('#table-movimientos tbody tr');
-    mainRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length < 4) return;
+    const data = getAppData();
+    const filteredMovements = data.movements.filter(m => m.cat === name);
+    [...filteredMovements].reverse().sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(m => {
+        total += m.type === 'income' ? m.amount : -m.amount;
 
-        const catCell = cells[2].innerText.trim();
-        if (catCell === name) {
-            const date = cells[0].innerText;
-            const desc = cells[1].innerText;
-            const amountText = cells[3].innerText;
-            const amount = parseInt(amountText.replace(/[$.|+-]/g, '')) || 0;
-            const isExpense = amountText.includes('-');
+        const dateObj = new Date(m.date + "T00:00:00");
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        const formattedDate = dateObj.toLocaleDateString('en-GB', options);
 
-            total += isExpense ? -amount : amount;
-
-            const newRow = document.createElement('tr');
-            newRow.style.borderBottom = '1px solid var(--border-color)';
-            newRow.innerHTML = `
-                <td style="padding: 12px;">${date}</td>
-                <td>${desc}</td>
-                <td style="color: ${isExpense ? '#e74c3c' : '#2ecc71'};">
-                    ${amountText}
-                </td>
-            `;
-            detailTableBody.appendChild(newRow);
-        }
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid var(--border-color)';
+        row.innerHTML = `
+            <td style="padding: 12px;">${formattedDate}</td>
+            <td>${m.desc}</td>
+            <td style="color: ${m.type === 'income' ? '#2ecc71' : '#e74c3c'};">
+                ${m.type === 'income' ? '+' : '-'}$${m.amount.toLocaleString('es-CO')}
+            </td>
+        `;
+        detailTableBody.appendChild(row);
     });
 
-    // Actualizar Total
     detailTotal.innerText = `Total: $${Math.abs(total).toLocaleString('es-CO')}`;
     detailTotal.style.color = total >= 0 ? '#2ecc71' : '#e74c3c';
 
-    // Cambiar vista
     mainView.style.display = 'none';
     detailView.style.display = 'block';
 }
