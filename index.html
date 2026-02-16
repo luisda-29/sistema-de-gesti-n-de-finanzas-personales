@@ -5,19 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Financiero Premium</title>
     <script>
-        // Guardia de navegación: Redirigir al login si no hay sesión activa
-        // Usamos el prefijo 'finanzas_' definido en app.js
-        if (!localStorage.getItem('finanzas_currentUser')) {
-            window.location.href = 'login.html';
-        }
+        // Guardia de navegación: Mostrar login si no hay sesión activa
+        // El contenido se mostrará/ocultará dinámicamente con JS
     </script>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Login Container -->
+    <div id="login-container" class="login-container" style="display: none;">
+        <div class="glass-box">
+            <div class="logo">
+                <i class="fas fa-wallet"></i> Fine<span>nce</span>
+            </div>
+
+            <!-- Formulario de Login -->
+            <div id="login-form">
+                <h2>Bienvenido de nuevo</h2>
+                <p class="subtitle">Ingresa tus credenciales para continuar</p>
+                <div id="loginMessage" style="text-align: center; margin-bottom: 10px; font-size: 14px;"></div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <div class="input-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="tu@correo.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••">
+                    </div>
+                </div>
+                <button class="btn-primary" id="btn-login-submit" onclick="login()">Iniciar Sesión</button>
+                <p class="switch-form">¿No tienes cuenta? <a href="#" id="link-show-register" onclick="event.preventDefault(); showRegister();">Regístrate aquí</a></p>
+            </div>
+
+            <!-- Formulario de Registro (Oculto) -->
+            <div id="register-form" style="display: none;">
+                <h2>Crear una cuenta</h2>
+                <p class="subtitle">Comienza a gestionar tus finanzas hoy</p>
+                <div id="registerMessage" style="text-align: center; margin-bottom: 10px; font-size: 14px;"></div>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <div class="input-icon">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" id="registerName" placeholder="Ej: Alberto Rodriguez">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <div class="input-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="registerEmail" placeholder="ejemplo@correo.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="registerPassword" placeholder="Crea una contraseña">
+                    </div>
+                </div>
+                <button class="btn-primary" id="btn-register-submit" onclick="register()">Registrarme</button>
+                <p class="switch-form">¿Ya tienes cuenta? <a href="#" id="link-show-login" onclick="event.preventDefault(); showLogin();">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
-    <div class="app-container">
+    <div class="app-container" id="app-container" style="display: none;">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
@@ -354,6 +414,7 @@
 
         </main>
     </div>
+    <script type="module" src="js/app.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

@@ -19,6 +19,7 @@ authManager.setStrategy(emailAuthStrategy);
 
 // Hacer disponible globalmente para el HTML
 window.uiController = uiController;
+window.authManager = authManager;
 
 // ========== FUNCIONES DE AUTENTICACIÓN PÚBLICAS ==========
 
@@ -27,7 +28,10 @@ window.uiController = uiController;
  */
 function showRegister() {
     uiController.clearLoginMessage();
-    uiController.showRegisterForm();
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    if (registerForm) registerForm.style.display = 'block';
+    if (loginForm) loginForm.style.display = 'none';
 }
 
 /**
@@ -35,7 +39,10 @@ function showRegister() {
  */
 function showLogin() {
     uiController.clearRegisterMessage();
-    uiController.showLoginForm();
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    if (registerForm) registerForm.style.display = 'none';
+    if (loginForm) loginForm.style.display = 'block';
 }
 
 /**
@@ -71,8 +78,17 @@ async function login() {
         const user = await authManager.login(credentials);
         if (user) {
             uiController.clearLoginForm();
-            // Redirigir al dashboard principal
-            window.location.href = 'index.html';
+            // Si estamos en index.html integrado, ocultar login y mostrar dashboard
+            const loginContainer = document.getElementById('login-container');
+            const appContainer = document.getElementById('app-container');
+            if (loginContainer && appContainer) {
+                loginContainer.style.display = 'none';
+                appContainer.style.display = '';
+                showDashboard();
+            } else {
+                // Si no estamos en el index integrado, redirigir
+                window.location.href = 'index.html';
+            }
         } else {
             uiController.setLoginMessage('Credenciales incorrectas', true);
         }
@@ -87,8 +103,17 @@ async function login() {
 function logout() {
     authManager.logout();
     uiController.clearLoginForm();
-    uiController.showAuthContainer();
-    uiController.showLoginForm();
+    // Si estamos en index integrado, mostrar login
+    const loginContainer = document.getElementById('login-container');
+    const appContainer = document.getElementById('app-container');
+    if (loginContainer && appContainer) {
+        loginContainer.style.display = '';
+        appContainer.style.display = 'none';
+        showLogin();
+    } else {
+        uiController.showAuthContainer();
+        uiController.showLoginForm();
+    }
 }
 
 // ========== FUNCIONES DEL DASHBOARD ==========
@@ -127,6 +152,14 @@ function addCategory() {
     }
 }
 
+/**
+ * Maneja el logout desde el sidebar
+ */
+function handleLogout(event) {
+    event.preventDefault();
+    logout();
+}
+
 // ========== INICIALIZACIÓN ==========
 /**
  * Verifica si ya está logueado al cargar la página
@@ -134,26 +167,44 @@ function addCategory() {
 window.addEventListener('DOMContentLoaded', () => {
     const user = authManager.getCurrentUser();
 
-    // Configurar listeners de UI si estamos en la página de login
-    const btnLogin = document.getElementById('btn-login-submit');
-    const btnRegister = document.getElementById('btn-register-submit');
-    const linkShowRegister = document.getElementById('link-show-register');
-    const linkShowLogin = document.getElementById('link-show-login');
-
-    if (btnLogin) btnLogin.addEventListener('click', login);
-    if (btnRegister) btnRegister.addEventListener('click', register);
-    if (linkShowRegister) linkShowRegister.addEventListener('click', (e) => { e.preventDefault(); showRegister(); });
-    if (linkShowLogin) linkShowLogin.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
-
     if (user && authManager.isAuthenticated()) {
-        // Si estamos en login.html y ya hay sesión, ir al index
+        // Si ya hay sesión
         if (window.location.pathname.endsWith('login.html')) {
+            // En login.html, redirigir al index
             window.location.href = 'index.html';
+        } else {
+            // En index.html integrado, mostrar dashboard
+            const loginContainer = document.getElementById('login-container');
+            const appContainer = document.getElementById('app-container');
+            if (loginContainer && appContainer) {
+                loginContainer.style.display = 'none';
+                appContainer.style.display = '';
+                showDashboard();
+            }
         }
     } else {
-        // Solo mostrar forms si estamos en login.html
+        // Mostrar login
         if (window.location.pathname.endsWith('login.html')) {
             showLogin();
+        } else {
+            // En index.html integrado
+            const loginContainer = document.getElementById('login-container');
+            const appContainer = document.getElementById('app-container');
+            if (loginContainer && appContainer) {
+                loginContainer.style.display = '';
+                appContainer.style.display = 'none';
+                showLogin();
+            }
         }
     }
 });
+
+// Hacer funciones disponibles globalmente
+window.showLogin = showLogin;
+window.showRegister = showRegister;
+window.login = login;
+window.register = register;
+window.logout = logout;
+window.showDashboard = showDashboard;
+window.addCategory = addCategory;
+window.handleLogout = handleLogout;
