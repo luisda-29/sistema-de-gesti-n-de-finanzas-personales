@@ -27,6 +27,7 @@
     
     /* BORDES Y SOMBRAS */
     --border-color: #eef2f7;
+    --border-light: #ddd;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
     
@@ -56,4 +57,7 @@
     --sidebar-width: 240px;
     --header-height: 80px;
     --main-content-padding: 24px 40px;
+    
+    /* GRADIENTES */
+    --gradient-login: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(225, 177, 92, 0.1) 100%);
 }
