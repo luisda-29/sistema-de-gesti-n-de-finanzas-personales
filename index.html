@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="css/styles.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Responsive fix: make income/expense registration column on mobile/tablet -->
+    <style>
+        @media (max-width: 900px) {
+            .dashboard-reg-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .dashboard-reg-grid > div {
+                border-right: none !important;
+                padding-right: 0 !important;
+            }
+            .dashboard-reg-grid input.btn-outline,
+            .dashboard-reg-grid select.btn-outline {
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            #view-dashboard .card { padding: 12px; }
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
