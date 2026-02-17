@@ -378,6 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
     if (mobileMenuBtn && sidebar && sidebarOverlay) {
+        // Asegurar visibilidad en pantallas pequeñas
+        const showIfMobile = () => {
+            if (window.innerWidth <= 900) mobileMenuBtn.style.display = 'inline-flex';
+            else mobileMenuBtn.style.display = 'none';
+        };
+        showIfMobile();
+        window.addEventListener('resize', showIfMobile);
         mobileMenuBtn.addEventListener('click', () => {
             sidebar.classList.add('active');
             sidebarOverlay.classList.add('active');
