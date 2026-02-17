@@ -1,0 +1,121 @@
+promt 1 = 
+
+Crea un CRUD en JavaScript Vanilla que use LocalStorage como base de datos.
+
+Requisitos obligatorios:
+
+1. El ID debe generarse automáticamente con base en la longitud actual del array de objetos guardado en LocalStorage.
+   - Ejemplo: si hay 3 objetos, el nuevo ID será 4.
+   - Debe evitar colisiones si se eliminan elementos (puedes validar o ajustar).
+
+2. Las funciones deben ser simples y claras.
+   - Máximo 20 líneas de código por función.
+   - Sin sobreingeniería ni patrones complejos.
+
+3. Las funciones deben ser independientes de los datos entrantes.
+   - Deben recibir parámetros dinámicos.
+   - No deben depender de una estructura fija (los campos los definiré después).
+
+4. Usar únicamente JavaScript Vanilla.
+   - No usar frameworks ni librerías externas.
+
+5. Debe incluir las 4 operaciones:
+   - create()
+   - readAll()
+   - update()
+   - delete()
+
+6. Usar buenas prácticas básicas:
+   - Manejo de errores simple (try/catch si aplica).
+   - Validar existencia en LocalStorage.
+   - Convertir correctamente JSON ↔ Array.
+
+7. El código debe estar comentado para fácil comprensión (nivel principiante).
+
+Entrega el resultado en un solo archivo JS listo para usar.
+
+
+
+promt 2 =
+divide las reponsavilidades de este proyecto que sea funcional , crear interfaces o erencias para el crud  y hacer el polimorfixmo para el login
+
+
+promt 3 = 
+renombre la rama llamada crud-persistensia para refactorizar
+
+promt 4 =
+crea un commit explicativo en español se breve y sube la rama  -> crea otra rama llamada develop y une los cambios de la rama dashboard y los nuevos 
+
+promt 5 =
+sigiendo con la arquitectura por capas modular , vas a crear la funcionalidad de la billetera 
+
+criterios solo funcional : debe crear una nueva billetera , modificar y eliminar ,que valide montos que no agrege mas de lo que tiene , que no agrege numeros negativos , debe iniciar con un monto monetario inicial , siempre preguntar el monto inicial + descuentos de nomina quincenales o mensuales 
+
+promt 6 =
+enfoque : css 
+
+promt 7 =
+dividir responsavilidades   variables , tipografias , responsive , componentes 
+
+usar las variables de colores   , y tipografia y eliminar codigo repetitivo sin funcionar 
+
+crear el responsive design en un archivo separado , los componentes  en la vista  mobil este en columna  
+
+linkear los estilos creados en en los html utilizados 
+
+no tocar el diseño ya echo , solo reutilizar lo que ya esta
+
+
+promt 8 =
+guardar los cambios en local , commit en español
+
+promt 9 = 
+en el dashboard en la parte del registro de gastos e ingreso ,solo en la verision movil debe aparecer en column , pero la  grafica debe estar igual sin modificaciones 
+
+no vas a cambiar nada de estilos , solo el responsive desing móvil
+
+promt 10 = 
+el btn de apertura de sidebar del dahsboard que abre los movimientos billetera etc.. 
+
+no vas cambies el estilo solo funcionamiento 
+
+este btn solo debe aparecer solo en mobil  , que el btb este en el lado derecha superior 
+
+el btn debe tener un estilo minimalista y trasnparente con detalles negros con bordes negros 
+
+
+<aside class="sidebar">
+            <div class="logo">
+                Fine<span>nce</span>
+            </div>
+            <nav class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" id="nav-dashboard">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-movimientos">
+                        <i class="fas fa-exchange-alt"></i> Movimientos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-billeteras">
+                        <i class="fas fa-wallet"></i> Billeteras
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-categorias">
+                        <i class="fas fa-tags"></i> Categorías
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="nav-micuenta">
+                        <i class="fas fa-user-circle"></i> Mi cuenta
+                    </a>
+                </li>
+            </nav>
+        </aside>
+
+
+no vas a modificar nada de este codigo , solo es para que veas lo que quiero abrir en mobil , el boton en version tablec no debe aparecer 

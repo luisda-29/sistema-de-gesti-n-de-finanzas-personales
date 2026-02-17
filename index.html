@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Financiero Premium</title>
-    <script>
-        // Guardia de navegación: Redirigir al login si no hay sesión activa
-        // Usamos el prefijo 'finanzas_' definido en app.js
-        if (!localStorage.getItem('finanzas_currentUser')) {
-            window.location.href = 'login.html';
-        }
-    </script>
     <link rel="stylesheet" href="css/styles.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Responsive fix: make income/expense registration column on mobile/tablet -->
+    <style>
+        @media (max-width: 900px) {
+            .dashboard-reg-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .dashboard-reg-grid > div {
+                border-right: none !important;
+                padding-right: 0 !important;
+            }
+            .dashboard-reg-grid input.btn-outline,
+            .dashboard-reg-grid select.btn-outline {
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            #view-dashboard .card { padding: 12px; }
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -60,13 +72,13 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <div class="header-title" style="display: flex; align-items: center; gap: 16px;">
-                    <button id="mobile-menu-btn" style="display: none; background: transparent; border: none; font-size: 20px; color: var(--sidebar-bg); cursor: pointer;">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                <div class="header-title">
                     <h1 id="view-title">Dashboard</h1>
                 </div>
                 <div class="header-actions">
+                    <button id="mobile-menu-btn" aria-label="Abrir menú" style="display:none; background:transparent; border:none; font-size:20px; margin-right:12px;">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <div class="user-profile">
                         <div class="avatar" id="header-avatar" style="background-size: cover; background-position: center;"></div>
                         <div class="user-info">
@@ -354,6 +366,10 @@
 
         </main>
     </div>
+    <!-- Overlay para móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <script type="module" src="js/app.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/mobile.js"></script>
 </body>
 </html>

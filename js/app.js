@@ -19,6 +19,11 @@ authManager.setStrategy(emailAuthStrategy);
 
 // Hacer disponible globalmente para el HTML
 window.uiController = uiController;
+// Exponer managers para que scripts no-modulares (dashboard.js) puedan usarlos
+window.storageManager = storageManager;
+window.authManager = authManager;
+window.categoryManager = categoryManager;
+window.storageAdapter = storageAdapter;
 
 // ========== FUNCIONES DE AUTENTICACIÓN PÚBLICAS ==========
 
@@ -155,5 +160,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (window.location.pathname.endsWith('login.html')) {
             showLogin();
         }
+    }
+
+    // Si estamos en index.html pero no hay sesión, redirigir al login
+    if (!user && window.location.pathname.endsWith('index.html')) {
+        window.location.href = 'login.html';
     }
 });
