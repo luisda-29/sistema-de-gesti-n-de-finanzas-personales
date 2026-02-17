@@ -73,6 +73,13 @@
         padding-bottom: 16px;
     }
 
+    /* Forzar que los controles internos se apilen en columna en móvil */
+    #view-dashboard > .card:first-child > div > div > div {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
     #view-dashboard > .card:first-child > div > div:last-child {
         border-bottom: none;
     }

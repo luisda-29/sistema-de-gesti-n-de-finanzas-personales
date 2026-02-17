@@ -64,4 +64,28 @@ export class StorageManager {
     clearAll() {
         return this.adapter.clear();
     }
+
+    /**
+     * Obtiene los datos de la aplicación (wallets, movements, categories) para un usuario
+     */
+    getData(userId) {
+        const key = `data_${userId}`;
+        return this.adapter.get(key, null);
+    }
+
+    /**
+     * Guarda los datos de la aplicación (wallets, movements, categories) para un usuario
+     */
+    saveData(userId, data) {
+        const key = `data_${userId}`;
+        return this.adapter.set(key, data);
+    }
+
+    /**
+     * Elimina los datos asociados a un usuario
+     */
+    removeData(userId) {
+        const key = `data_${userId}`;
+        return this.adapter.remove(key);
+    }
 }

@@ -1,11 +1,10 @@
 // Dashboard Interactions (Functional UI)
 
 function syncUserUI() {
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (!userJson) return;
+    const user = window.storageManager && window.storageManager.getCurrentUser ? window.storageManager.getCurrentUser() : null;
+    if (!user) return;
 
     try {
-        const user = JSON.parse(userJson);
 
         // Actualizar Header
         const headerName = document.getElementById('header-user-name');
@@ -42,10 +41,8 @@ function handleAvatarClick() {
 }
 
 function savePersonalData() {
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (!userJson) return;
-
-    const currentUser = JSON.parse(userJson);
+    const currentUser = window.storageManager.getCurrentUser();
+    if (!currentUser) return;
     const newName = document.getElementById('edit-name').value.trim();
     const newEmail = document.getElementById('edit-email').value.trim();
 
@@ -59,18 +56,17 @@ function savePersonalData() {
     currentUser.email = newEmail;
 
     // 2. Actualizar en la lista maestra de usuarios
-    const usersJson = localStorage.getItem('finanzas_users');
-    if (usersJson) {
-        let users = JSON.parse(usersJson);
+    const users = window.storageManager.getUsers();
+    if (users && Array.isArray(users)) {
         const index = users.findIndex(u => u.id === currentUser.id);
         if (index !== -1) {
             users[index].name = newName;
             users[index].email = newEmail;
-            localStorage.setItem('finanzas_users', JSON.stringify(users));
+            window.storageManager.saveUsers(users);
         }
     }
 
-    localStorage.setItem('finanzas_currentUser', JSON.stringify(currentUser));
+    window.storageManager.setCurrentUser(currentUser);
     syncUserUI();
     alert('¡Información personal actualizada con éxito!');
 }
@@ -94,18 +90,15 @@ function updatePassword() {
         return;
     }
 
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (userJson) {
-        const currentUser = JSON.parse(userJson);
-
+    const currentUser = window.storageManager.getCurrentUser();
+    if (currentUser) {
         // Actualizar en la lista maestra
-        const usersJson = localStorage.getItem('finanzas_users');
-        if (usersJson) {
-            let users = JSON.parse(usersJson);
+        const users = window.storageManager.getUsers();
+        if (users && Array.isArray(users)) {
             const index = users.findIndex(u => u.id === currentUser.id);
             if (index !== -1) {
                 users[index].password = pass; // Actualizar contraseña real
-                localStorage.setItem('finanzas_users', JSON.stringify(users));
+                window.storageManager.saveUsers(users);
 
                 alert('¡Contraseña actualizada con éxito!');
                 document.getElementById('edit-password').value = '';
@@ -118,24 +111,25 @@ function updatePassword() {
 function handleLogout(e) {
     if (e) e.preventDefault();
     if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        localStorage.removeItem('finanzas_currentUser');
+        if (window.storageManager && window.storageManager.clearSession) {
+            window.storageManager.clearSession();
+        } else {
+            localStorage.removeItem('finanzas_currentUser');
+        }
         window.location.href = 'login.html';
     }
 }
 
 function deleteAccount() {
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (!userJson) return;
-
-    const currentUser = JSON.parse(userJson);
+    const currentUser = window.storageManager.getCurrentUser();
+    if (!currentUser) return;
 
     const confirmPass = prompt("Para eliminar tu cuenta, por favor ingresa tu contraseña actual:");
     if (!confirmPass) return;
 
     // 1. Validar contraseña contra la lista maestra
-    const usersJson = localStorage.getItem('finanzas_users');
-    if (usersJson) {
-        let users = JSON.parse(usersJson);
+    const users = window.storageManager.getUsers();
+    if (users && Array.isArray(users)) {
         const userInDb = users.find(u => u.id === currentUser.id);
 
         if (!userInDb || userInDb.password !== confirmPass) {
@@ -145,14 +139,18 @@ function deleteAccount() {
 
         if (confirm(`¿Estás COMPLETAMENTE seguro, ${currentUser.name}? Todos tus datos, billeteras y movimientos se borrarán para siempre.`)) {
             // 2. Eliminar datos del usuario (Aislamiento)
-            localStorage.removeItem(`finanzas_data_${currentUser.id}`);
+            if (window.storageManager.removeData) {
+                window.storageManager.removeData(currentUser.id);
+            } else {
+                localStorage.removeItem(`finanzas_data_${currentUser.id}`);
+            }
 
             // 3. Eliminar de la lista maestra
             const updatedUsers = users.filter(u => u.id !== currentUser.id);
-            localStorage.setItem('finanzas_users', JSON.stringify(updatedUsers));
+            window.storageManager.saveUsers(updatedUsers);
 
             // 4. Limpiar sesión y salir
-            localStorage.removeItem('finanzas_currentUser');
+            window.storageManager.clearSession();
             alert("Tu cuenta y todos tus datos han sido eliminados. Lamentamos verte partir.");
             window.location.href = 'login.html';
         }
@@ -190,27 +188,17 @@ function showSection(viewId) {
 // --- Gestión de Datos (LocalStorage) ---
 
 function getAppData() {
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (!userJson) return { wallets: [], movements: [], categories: [] };
+    const user = window.storageManager.getCurrentUser();
+    if (!user) return { wallets: [], movements: [], categories: [] };
 
-    const user = JSON.parse(userJson);
-    const storageKey = `finanzas_data_${user.id}`;
-    const dataJson = localStorage.getItem(storageKey);
-
-    return dataJson ? JSON.parse(dataJson) : {
-        wallets: [],
-        movements: [],
-        categories: []
-    };
+    const data = window.storageManager.getData(user.id);
+    return data ? data : { wallets: [], movements: [], categories: [] };
 }
 
 function saveAppData(data) {
-    const userJson = localStorage.getItem('finanzas_currentUser');
-    if (!userJson) return;
-
-    const user = JSON.parse(userJson);
-    const storageKey = `finanzas_data_${user.id}`;
-    localStorage.setItem(storageKey, JSON.stringify(data));
+    const user = window.storageManager.getCurrentUser();
+    if (!user) return;
+    window.storageManager.saveData(user.id, data);
 }
 
 function updateWalletSelectors() {
@@ -438,23 +426,21 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onload = function (event) {
                 const base64Image = event.target.result;
 
-                const userJson = localStorage.getItem('finanzas_currentUser');
-                if (userJson) {
-                    const currentUser = JSON.parse(userJson);
+                const currentUser = window.storageManager.getCurrentUser();
+                if (currentUser) {
                     currentUser.avatar = base64Image;
 
                     // 1. Actualizar en la lista maestra
-                    const usersJson = localStorage.getItem('finanzas_users');
-                    if (usersJson) {
-                        let users = JSON.parse(usersJson);
+                    const users = window.storageManager.getUsers();
+                    if (users && Array.isArray(users)) {
                         const index = users.findIndex(u => u.id === currentUser.id);
                         if (index !== -1) {
                             users[index].avatar = base64Image;
-                            localStorage.setItem('finanzas_users', JSON.stringify(users));
+                            window.storageManager.saveUsers(users);
                         }
                     }
 
-                    localStorage.setItem('finanzas_currentUser', JSON.stringify(currentUser));
+                    window.storageManager.setCurrentUser(currentUser);
                     syncUserUI();
                 }
             };
